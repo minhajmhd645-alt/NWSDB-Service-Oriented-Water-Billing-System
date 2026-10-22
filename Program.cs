@@ -1,102 +1,80 @@
-using Microsoft.AspNetCore.Builder;
+using Bank.API.Data;
+using Bank.API.Interfaces;
+using Bank.API.Middleware;
+using Bank.API.Repositories;
+using Bank.API.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using NWSDB.API.Data;
-using NWSDB.API.HttpClients;
-using NWSDB.API.Interfaces;
-using NWSDB.API.Middleware;
-using NWSDB.API.Services;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// ── Controllers ──────────────────────────────────────────────────────────────
 builder.Services.AddControllers();
 
-// Configure Database
-builder.Services.AddDbContext<NWSDBDbContext>(options =>
+// ── Database ─────────────────────────────────────────────────────────────────
+builder.Services.AddDbContext<BankDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Dependency Injection
-builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<IBillService, BillService>();
-builder.Services.AddScoped<IWaterUsageService, WaterUsageService>();
-builder.Services.AddScoped<IPaymentService, PaymentService>();
+// ── Dependency Injection ──────────────────────────────────────────────────────
+builder.Services.AddScoped<IBankTransactionRepository, BankTransactionRepository>();
+builder.Services.AddScoped<IBankAccountService, BankAccountService>();
+builder.Services.AddScoped<IBankPaymentService, BankPaymentService>();
 
-// ── Bank.API Typed HttpClient ─────────────────────────────────────────────────
-// Reads base URL from "BankApi:BaseUrl" in appsettings.
-// In Development, SSL certificate validation is disabled so the self-signed
-// dev certificate on https://localhost:7001 does not block requests.
-var bankApiBaseUrl = builder.Configuration["BankApi:BaseUrl"]
-    ?? throw new InvalidOperationException("BankApi:BaseUrl is not configured.");
-
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddHttpClient<IBankApiClient, BankApiClient>(client =>
-    {
-        client.BaseAddress = new Uri(bankApiBaseUrl);
-    })
-    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-    {
-        // Accept the self-signed dev certificate — Development only
-        ServerCertificateCustomValidationCallback =
-            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-    });
-}
-else
-{
-    builder.Services.AddHttpClient<IBankApiClient, BankApiClient>(client =>
-    {
-        client.BaseAddress = new Uri(bankApiBaseUrl);
-    });
-}
-
-// Configure OpenAPI for Scalar
-builder.Services.AddEndpointsApiExplorer();
+// ── OpenAPI (required by Scalar) ──────────────────────────────────────────────
 builder.Services.AddOpenApi();
 
-// CORS policy
+// ── CORS ──────────────────────────────────────────────────────────────────────
+var corsOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? ["http://localhost:3000", "http://localhost:5173", "http://localhost:4200"];
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
+    options.AddPolicy("BankApiCors", policy =>
     {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader();
+        policy.WithOrigins(corsOrigins)
+              .AllowAnyMethod()
+              .AllowAnyHeader();
     });
 });
 
-// Health Checks
+// ── Health Checks ─────────────────────────────────────────────────────────────
 builder.Services.AddHealthChecks()
-    .AddDbContextCheck<NWSDBDbContext>();
+    .AddDbContextCheck<BankDbContext>("BankDb");
 
+// ─────────────────────────────────────────────────────────────────────────────
 var app = builder.Build();
 
-// Seed Database
+// ── Seed Database ─────────────────────────────────────────────────────────────
 using (var scope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<NWSDBDbContext>();
-    DbInitializer.Initialize(context);
+    var ctx = scope.ServiceProvider.GetRequiredService<BankDbContext>();
+    DbInitializer.Initialize(ctx);
 }
 
-// Global Exception Handler
+// ── Global Exception Handler ──────────────────────────────────────────────────
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-app.UseCors("AllowAll");
+// ── CORS ──────────────────────────────────────────────────────────────────────
+app.UseCors("BankApiCors");
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    app.MapScalarApiReference();
-}
+// ── OpenAPI + Scalar (available in all environments for demo) ─────────────────
+app.MapOpenApi();                   // → /openapi/v1.json
+app.MapScalarApiReference();        // → /scalar/v1
 
+// ── HTTPS redirect ────────────────────────────────────────────────────────────
 app.UseHttpsRedirection();
+
+// ── Authorization ─────────────────────────────────────────────────────────────
 app.UseAuthorization();
+
+// ── Controllers ───────────────────────────────────────────────────────────────
 app.MapControllers();
 
-app.MapHealthChecks("/health/db");
+// ── Health Check ──────────────────────────────────────────────────────────────
+app.MapHealthChecks("/health");
 
 app.Run();
+
+// Needed for integration test WebApplicationFactory access
+public partial class Program { }

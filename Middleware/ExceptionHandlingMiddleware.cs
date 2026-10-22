@@ -1,19 +1,21 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using System;
+using Bank.API.DTOs;
 using System.Text.Json;
-using System.Threading.Tasks;
-using NWSDB.API.DTOs;
-using NWSDB.API.Exceptions;
 
-namespace NWSDB.API.Middleware
+namespace Bank.API.Middleware
 {
+    /// <summary>
+    /// Global exception handling middleware.
+    /// Returns clean JSON error responses and logs exceptions.
+    /// Stack traces are never exposed to clients.
+    /// </summary>
     public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
-        public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+        public ExceptionHandlingMiddleware(
+            RequestDelegate next,
+            ILogger<ExceptionHandlingMiddleware> logger)
         {
             _next = next;
             _logger = logger;
@@ -27,38 +29,41 @@ namespace NWSDB.API.Middleware
             }
             catch (ArgumentException ex)
             {
-                // Business logic validation error
-                _logger.LogWarning(ex, "Validation error occurred.");
-                await HandleExceptionAsync(context, ex.Message, StatusCodes.Status400BadRequest);
+                _logger.LogWarning(ex, "Validation error: {Message}", ex.Message);
+                await WriteErrorResponseAsync(context, ex.Message, StatusCodes.Status400BadRequest);
             }
-            catch (BankApiException ex)
+            catch (InvalidOperationException ex)
             {
-                // Downstream Bank.API error or business rejection
-                var statusCode = (int)ex.StatusCode;
-                _logger.LogWarning(ex, "Bank.API response exception | Status: {StatusCode} | Message: {Message}", statusCode, ex.Message);
-                await HandleExceptionAsync(context, ex.Message, statusCode);
+                _logger.LogWarning(ex, "Business rule violation: {Message}", ex.Message);
+                await WriteErrorResponseAsync(context, ex.Message, StatusCodes.Status409Conflict);
             }
             catch (Exception ex)
             {
-                // Unhandled system error
                 _logger.LogError(ex, "An unhandled exception occurred.");
-                await HandleExceptionAsync(context, "An internal server error occurred.", StatusCodes.Status500InternalServerError);
+                await WriteErrorResponseAsync(context,
+                    "An internal server error occurred. Please try again later.",
+                    StatusCodes.Status500InternalServerError);
             }
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, string message, int statusCode)
+        private static Task WriteErrorResponseAsync(
+            HttpContext context, string message, int statusCode)
         {
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = statusCode;
+            context.Response.StatusCode  = statusCode;
 
             var response = new ResponseDto<object>
             {
                 Success = false,
                 Message = message,
-                Data = null
+                Data    = null
             };
 
-            var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+
             return context.Response.WriteAsync(JsonSerializer.Serialize(response, options));
         }
     }
