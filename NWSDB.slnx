@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="NWSDB.API/NWSDB.API.csproj" />
+  <Project Path="Bank.API/Bank.API.csproj" />
+  <Project Path="NWSDB.Web/NWSDB.Web.csproj" />
+  <Project Path="NWSDB.ThirdPartyClient/NWSDB.ThirdPartyClient.csproj" />
+</Solution>
