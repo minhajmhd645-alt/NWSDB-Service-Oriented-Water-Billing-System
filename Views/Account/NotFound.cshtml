@@ -1,0 +1,35 @@
+@{
+    ViewData["Title"] = "Account Not Found";
+    var reqAcc = ViewBag.RequestedAccount as string ?? "";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 text-center">
+            <div class="card card-custom p-5">
+                <div class="stat-icon bg-danger-subtle text-danger mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2.5rem;">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <h3 class="fw-bold text-navy mb-2">Account Not Found</h3>
+                <p class="text-muted fs-6 mb-4">
+                    The requested account number <strong class="text-dark">'@reqAcc'</strong> could not be found in NWSDB records.
+                </p>
+
+                <div class="bg-light p-3 rounded-3 mb-4 text-start fs-7">
+                    <h6 class="fw-bold text-navy mb-2"><i class="bi bi-lightbulb me-1 text-warning"></i>Available Test Accounts:</h6>
+                    <ul class="mb-0 text-muted">
+                        <li><strong>NWSDB10001</strong> — Sunil Perera</li>
+                        <li><strong>NWSDB10002</strong> — Nimal Silva</li>
+                        <li><strong>NWSDB10003</strong> — Kamala Fernando</li>
+                        <li><strong>NWSDB10004</strong> — Roshan Jayawardena</li>
+                    </ul>
+                </div>
+
+                <form asp-controller="Home" asp-action="SelectAccount" method="post" class="d-flex justify-content-center gap-2">
+                    <input type="text" name="AccountNumber" class="form-control form-control-lg text-center fw-bold" placeholder="e.g. NWSDB10001" style="max-width: 250px;" required />
+                    <button type="submit" class="btn btn-primary btn-lg fw-semibold px-4">Try Again</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

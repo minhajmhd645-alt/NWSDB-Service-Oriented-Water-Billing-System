@@ -1,0 +1,67 @@
+@model PaymentReceiptViewModel
+@{
+    ViewData["Title"] = "Payment Receipt";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card card-custom border-top border-4 border-success overflow-hidden shadow-lg">
+                <div class="card-body p-4 p-md-5 text-center">
+                    <div class="stat-icon bg-success-subtle text-success mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2.5rem;">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+
+                    <h2 class="fw-bold text-navy mb-1">Payment Successful!</h2>
+                    <p class="text-muted fs-7 mb-4">Your water bill payment has been authorized and recorded in official NWSDB records.</p>
+
+                    <div class="p-4 bg-light rounded-3 text-start mb-4 fs-7 border">
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                            <span class="fw-bold text-navy fs-6">Official Payment Receipt</span>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 fw-semibold">@Model.Status</span>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fs-8">NWSDB Payment ID:</span>
+                                <strong class="fs-6 text-navy">#PAY-@Model.PaymentId</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fs-8">Bank Transaction Ref:</span>
+                                <strong class="fs-6 text-navy text-break">@Model.TransactionId</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fs-8">Customer Account:</span>
+                                <strong class="text-dark">@Model.AccountNumber</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fs-8">Bill Reference:</span>
+                                <strong class="text-dark">#BILL-@Model.BillId</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fs-8">Payment Method:</span>
+                                <span class="badge bg-secondary-subtle text-dark border">@Model.PaymentMethod</span>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fs-8">Payment Date & Time:</span>
+                                <span class="text-dark fw-medium">@Model.PaymentDate.ToString("dd MMM yyyy, HH:mm:ss") UTC</span>
+                            </div>
+                        </div>
+
+                        <hr class="my-3 opacity-25" />
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold text-navy">Amount Paid:</span>
+                            <span class="fs-3 fw-bold text-success">Rs. @Model.Amount.ToString("N2")</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                        <a asp-controller="Bills" asp-action="Index" class="btn btn-primary fw-semibold px-4"><i class="bi bi-file-earmark-text me-1"></i> View All Bills</a>
+                        <a asp-controller="Payments" asp-action="History" class="btn btn-outline-secondary fw-semibold px-4"><i class="bi bi-clock-history me-1"></i> Payment History</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

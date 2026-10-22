@@ -1,0 +1,167 @@
+@model NWSDB.Web.Models.PaymentListViewModel
+@{
+    ViewData["Title"] = "Payment Records - NWSDB Admin Control Panel";
+    var methodOptions = new[] { "All", "DemoCard", "DemoBankAccount" };
+}
+
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb fs-7">
+            <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Index" class="text-decoration-none">Admin Control Panel</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Payment Records</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h2 class="fw-bold text-navy mb-1"><i class="bi bi-credit-card-2-front-fill text-warning me-2"></i> Payment Records</h2>
+            <p class="text-muted mb-0">Inspect all payment transactions processed through the NWSDB &rarr; Bank.API pipeline.</p>
+        </div>
+        <div class="badge bg-navy fs-7 px-3 py-2 d-flex align-items-center gap-2">
+            <i class="bi bi-shield-lock-fill text-warning"></i>
+            Payment records are read-only. Payments processed via Bank.API.
+        </div>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="card border-0 shadow-sm bg-white mb-4">
+        <div class="card-body p-3">
+            <form method="get" asp-controller="Admin" asp-action="Payments" class="row g-2 align-items-center">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" name="searchAccount" value="@Model.SearchAccount" class="form-control border-start-0" placeholder="Search by Account Number, Transaction ID or Bill ID..." />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select name="methodFilter" class="form-select">
+                        @foreach (var opt in methodOptions)
+                        {
+                            if (opt == Model.MethodFilter)
+                            {
+                                <option value="@opt" selected>@(opt == "All" ? "All Payment Methods" : opt)</option>
+                            }
+                            else
+                            {
+                                <option value="@opt">@(opt == "All" ? "All Payment Methods" : opt)</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary fw-semibold w-100">
+                        <i class="bi bi-funnel-fill me-1"></i> Filter
+                    </button>
+                    @if (!string.IsNullOrWhiteSpace(Model.SearchAccount) || Model.MethodFilter != "All")
+                    {
+                        <a asp-controller="Admin" asp-action="Payments" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i>
+                        </a>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payment Records Table -->
+    <div class="card border-0 shadow-sm bg-white">
+        <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold text-navy mb-0">Payment Records Found: <span class="badge bg-navy">@Model.Payments.Count()</span></h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 fs-7">
+                <thead class="table-light text-muted fw-semibold">
+                    <tr>
+                        <th>Payment ID</th>
+                        <th>Bill Ref</th>
+                        <th>Customer Account</th>
+                        <th>Amount (Rs.)</th>
+                        <th>Bank Transaction ID</th>
+                        <th>Method</th>
+                        <th>Payment Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Payments.Any())
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-5">
+                                <i class="bi bi-credit-card fs-1 d-block text-secondary mb-2"></i>
+                                No payment records found matching your criteria.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var payment in Model.Payments)
+                        {
+                            var statusClass = payment.Status switch
+                            {
+                                "Success" => "bg-success-subtle text-success border-success-subtle",
+                                "Failed" => "bg-danger-subtle text-danger border-danger-subtle",
+                                _ => "bg-warning-subtle text-warning-emphasis border-warning-subtle"
+                            };
+                            var methodClass = payment.PaymentMethod switch
+                            {
+                                "DemoCard" => "bg-info-subtle text-info",
+                                "DemoBankAccount" => "bg-primary-subtle text-primary",
+                                _ => "bg-secondary-subtle text-secondary"
+                            };
+                            var methodIcon = payment.PaymentMethod switch
+                            {
+                                "DemoCard" => "bi-credit-card-fill",
+                                "DemoBankAccount" => "bi-bank2",
+                                _ => "bi-wallet2"
+                            };
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle font-monospace px-2">
+                                        #@payment.PaymentId
+                                    </span>
+                                </td>
+                                <td>
+                                    <a asp-controller="Admin" asp-action="BillDetails" asp-route-billId="@payment.BillId" class="text-decoration-none">
+                                        <span class="badge bg-light text-secondary border border-secondary-subtle font-monospace px-2">BILL-@payment.BillId</span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace px-2 fs-7">
+                                        @payment.AccountNumber
+                                    </span>
+                                </td>
+                                <td class="fw-bold text-success">Rs. @payment.Amount.ToString("N2")</td>
+                                <td>
+                                    <span class="font-monospace text-muted fs-8">@payment.TransactionId</span>
+                                </td>
+                                <td>
+                                    <span class="badge @methodClass border px-2 py-1">
+                                        <i class="bi @methodIcon me-1"></i> @payment.PaymentMethod
+                                    </span>
+                                </td>
+                                <td class="text-muted">
+                                    @payment.PaymentDate.ToLocalTime().ToString("dd MMM yyyy")
+                                    <small class="d-block text-muted fs-8">@payment.PaymentDate.ToLocalTime().ToString("HH:mm")</small>
+                                </td>
+                                <td>
+                                    <span class="badge border @statusClass px-2 py-1">@payment.Status</span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        @if (Model.Payments.Any())
+        {
+            <div class="card-footer bg-white border-0 py-3 px-4">
+                <small class="text-muted">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Payment records are read-only. All payments flow through NWSDB.API &rarr; Bank.API &rarr; Dummy Payment Gateway. Do not manually alter payment records.
+                </small>
+            </div>
+        }
+    </div>
+</div>

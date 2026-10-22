@@ -1,0 +1,147 @@
+@model CustomerSummaryModel
+@{
+    ViewData["Title"] = "Account Details";
+}
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb fs-7">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item active">Account Details</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-navy mb-1"><i class="bi bi-person-badge me-2 text-primary"></i>Customer Profile & Summary</h2>
+            <p class="text-muted fs-7 mb-0">Official customer details fetched from NWSDB REST API</p>
+        </div>
+        <div>
+            <a asp-controller="Bills" asp-action="Unpaid" class="btn btn-warning fw-semibold btn-sm"><i class="bi bi-credit-card me-1"></i> Pay Unpaid Bills</a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Customer Profile Card -->
+        <div class="col-lg-5">
+            <div class="card card-custom h-100">
+                <div class="card-header bg-navy text-white p-3 d-flex align-items-center justify-content-between">
+                    <span class="fw-semibold"><i class="bi bi-person-fill me-1"></i> Customer Information</span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle">Active Account</span>
+                </div>
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <div class="avatar-circle mx-auto bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mb-2" style="width: 70px; height: 70px; font-size: 2rem;">
+                            <i class="bi bi-person"></i>
+                        </div>
+                        <h4 class="fw-bold mb-1">@Model.Customer.FullName</h4>
+                        <span class="badge bg-primary fs-7 px-3 py-1">Account: @Model.Customer.AccountNumber</span>
+                    </div>
+
+                    <hr class="my-3 opacity-25" />
+
+                    <div class="space-y-3 fs-7">
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-muted"><i class="bi bi-hash me-2 text-primary"></i>Customer ID</span>
+                            <span class="fw-semibold">#@Model.Customer.CustomerId</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-muted"><i class="bi bi-geo-alt me-2 text-primary"></i>Registered Address</span>
+                            <span class="fw-semibold text-end ms-3">@Model.Customer.Address</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-muted"><i class="bi bi-telephone me-2 text-primary"></i>Phone Number</span>
+                            <span class="fw-semibold">@Model.Customer.PhoneNumber</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2">
+                            <span class="text-muted"><i class="bi bi-envelope me-2 text-primary"></i>Email Address</span>
+                            <span class="fw-semibold">@Model.Customer.Email</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Metrics & Latest Status -->
+        <div class="col-lg-7">
+            <div class="card card-custom h-100 p-4">
+                <h5 class="fw-bold text-navy mb-3"><i class="bi bi-bar-chart-line me-2 text-primary"></i>Billing Summary & Metrics</h5>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-light rounded-3 border">
+                            <span class="fs-8 text-muted fw-bold text-uppercase d-block mb-1">Outstanding Balance</span>
+                            <h3 class="fw-bold text-danger mb-0">Rs. @Model.CurrentOutstandingAmount.ToString("N2")</h3>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-light rounded-3 border">
+                            <span class="fs-8 text-muted fw-bold text-uppercase d-block mb-1">Unpaid Bills</span>
+                            <h3 class="fw-bold text-warning mb-0">@Model.NumberOfUnpaidBills <span class="fs-7 text-muted fw-normal">bill(s)</span></h3>
+                        </div>
+                    </div>
+                </div>
+
+                @if (Model.CurrentWaterUsage != null)
+                {
+                    <h6 class="fw-bold text-navy mb-2"><i class="bi bi-speedometer me-1 text-info"></i> Current Water Usage Reading</h6>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered table-sm align-middle fs-7 mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Reading Month</th>
+                                    <th>Previous</th>
+                                    <th>Current</th>
+                                    <th>Units Consumed</th>
+                                    <th>Recorded Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="fw-semibold">@Model.CurrentWaterUsage.ReadingMonth</td>
+                                    <td>@Model.CurrentWaterUsage.PreviousReading</td>
+                                    <td>@Model.CurrentWaterUsage.CurrentReading</td>
+                                    <td class="fw-bold text-primary">@Model.CurrentWaterUsage.UnitsConsumed Units</td>
+                                    <td>@Model.CurrentWaterUsage.RecordedDate.ToString("dd MMM yyyy")</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                @if (Model.LatestBill != null)
+                {
+                    <h6 class="fw-bold text-navy mb-2"><i class="bi bi-file-earmark-text me-1 text-primary"></i> Latest Monthly Bill</h6>
+                    <div class="p-3 border rounded-3 bg-white mb-3 d-flex flex-wrap justify-content-between align-items-center gap-2 fs-7">
+                        <div>
+                            <div><strong>Billing Month:</strong> @Model.LatestBill.BillingMonth</div>
+                            <div class="text-muted">Due Date: @Model.LatestBill.DueDate.ToString("dd MMM yyyy")</div>
+                        </div>
+                        <div>
+                            <div class="fs-5 fw-bold text-navy">Rs. @Model.LatestBill.BillAmount.ToString("N2")</div>
+                        </div>
+                        <div>
+                            @if (Model.LatestBill.Status == "Paid")
+                            {
+                                <span class="badge badge-paid px-3 py-2 fw-semibold">Paid</span>
+                            }
+                            else if (Model.LatestBill.Status == "Overdue")
+                            {
+                                <span class="badge badge-overdue px-3 py-2 fw-semibold">Overdue</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-unpaid px-3 py-2 fw-semibold">Unpaid</span>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <div class="mt-auto pt-3 border-top d-flex gap-2">
+                    <a asp-controller="Bills" asp-action="Index" class="btn btn-outline-primary btn-sm fw-semibold">View All Bills</a>
+                    <a asp-controller="Payments" asp-action="History" class="btn btn-outline-secondary btn-sm fw-semibold">View Payment History</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

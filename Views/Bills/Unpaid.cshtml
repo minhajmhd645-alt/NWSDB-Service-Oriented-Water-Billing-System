@@ -1,0 +1,101 @@
+@model BillsListViewModel
+@{
+    ViewData["Title"] = "Unpaid Bills";
+}
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb fs-7">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Bills" asp-action="Index">Bills</a></li>
+            <li class="breadcrumb-item active">Unpaid Bills</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <div>
+            <h2 class="fw-bold text-navy mb-1"><i class="bi bi-exclamation-circle-fill me-2 text-warning"></i>Unpaid & Overdue Bills</h2>
+            <p class="text-muted fs-7 mb-0">Account: <strong>@Model.CustomerName</strong> (@Model.AccountNumber)</p>
+        </div>
+        <div>
+            <a asp-controller="Bills" asp-action="Index" class="btn btn-outline-primary btn-sm fw-semibold">View All History</a>
+        </div>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="bi bi-info-circle me-1"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Bills.Any())
+    {
+        <div class="card card-custom p-5 text-center">
+            <div class="stat-icon bg-success-subtle text-success mx-auto mb-3" style="width: 70px; height: 70px; font-size: 2rem;">
+                <i class="bi bi-check-all"></i>
+            </div>
+            <h4 class="fw-bold text-navy">All Clear! No Unpaid Bills</h4>
+            <p class="text-muted fs-7 mb-3">Great news! Account @Model.AccountNumber has no outstanding or overdue bills.</p>
+            <div>
+                <a asp-controller="Bills" asp-action="Index" class="btn btn-outline-primary btn-sm fw-semibold">View Billing History</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var bill in Model.Bills)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-custom h-100 border-top border-4 @(bill.Status == "Overdue" ? "border-danger" : "border-warning")">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <span class="fs-8 text-muted fw-bold text-uppercase d-block">Bill Reference</span>
+                                    <h5 class="fw-bold text-navy mb-0">#BILL-@bill.BillId</h5>
+                                </div>
+                                <div>
+                                    @if (bill.Status == "Overdue")
+                                    {
+                                        <span class="badge badge-overdue px-3 py-1 fw-semibold"><i class="bi bi-exclamation-triangle me-1"></i>Overdue</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-unpaid px-3 py-1 fw-semibold"><i class="bi bi-clock me-1"></i>Unpaid</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="bg-light p-3 rounded-3 mb-3 fs-7">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="text-muted">Billing Period:</span>
+                                    <span class="fw-semibold text-dark">@bill.BillingMonth</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="text-muted">Units Consumed:</span>
+                                    <span class="fw-semibold text-dark">@bill.UnitsConsumed Units</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-muted">Due Date:</span>
+                                    <span class="fw-semibold text-danger">@bill.DueDate.ToString("dd MMM yyyy")</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-auto pt-2 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="fs-8 text-muted d-block">Amount Due</span>
+                                    <span class="fs-4 fw-bold text-navy">Rs. @bill.BillAmount.ToString("N2")</span>
+                                </div>
+                                <a asp-controller="Payments" asp-action="Pay" asp-route-billId="@bill.BillId" class="btn btn-warning fw-bold text-dark px-3 py-2">
+                                    <i class="bi bi-lightning-fill me-1"></i> Pay Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

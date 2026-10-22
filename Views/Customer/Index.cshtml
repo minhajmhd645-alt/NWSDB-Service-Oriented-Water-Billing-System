@@ -1,0 +1,136 @@
+@model IEnumerable<CustomerModel>
+@{
+    ViewData["Title"] = "Customer Management";
+    var customersList = Model?.ToList() ?? new List<CustomerModel>();
+}
+
+<div class="container mt-4">
+    <!-- Header Card -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom">
+        <div>
+            <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-2 mb-2">
+                <i class="bi bi-people-fill me-1"></i> Customer Administration
+            </span>
+            <h2 class="fw-bold text-navy mb-1">Customer Management</h2>
+            <p class="text-muted mb-0 fs-7">
+                View, create, and maintain registered NWSDB customer records.
+            </p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-info-subtle text-info border border-info-subtle fs-7 px-3 py-2">
+                Total: <strong>@customersList.Count</strong> Customer(s)
+            </span>
+            <a asp-action="Create" class="btn btn-primary fw-semibold px-3 d-inline-flex align-items-center">
+                <i class="bi bi-person-plus-fill me-2"></i> Add Customer
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2 fs-5 align-middle"></i>
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2 fs-5 align-middle"></i>
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Search / Filter Bar -->
+    <div class="card card-custom mb-4">
+        <div class="card-body p-3">
+            <div class="row align-items-center g-2">
+                <div class="col-md-6 col-lg-5">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" id="customerSearch" class="form-control border-start-0" placeholder="Filter by account, name, address, or phone..." onkeyup="filterCustomers()" />
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-7 text-md-end text-muted fs-8">
+                    <i class="bi bi-info-circle me-1"></i> Data retrieved live from <strong>NWSDB REST API</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customers Table Card -->
+    <div class="card card-custom overflow-hidden shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="customersTable">
+                <thead class="table-light text-uppercase fs-8 fw-bold text-muted border-bottom">
+                    <tr>
+                        <th class="ps-4">Account Number</th>
+                        <th>Full Name</th>
+                        <th>Registered Address</th>
+                        <th>Phone Number</th>
+                        <th>Email Address</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!customersList.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-folder-x fs-1 text-muted d-block mb-2"></i>
+                                No customer records found. Click <strong>Add Customer</strong> to create one.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var c in customersList)
+                        {
+                            <tr class="customer-row">
+                                <td class="ps-4 fw-bold text-navy">
+                                    <span class="badge bg-light text-dark border font-monospace fs-7 px-2 py-1">@c.AccountNumber</span>
+                                </td>
+                                <td class="fw-semibold text-dark">@c.FullName</td>
+                                <td class="text-muted fs-7">@c.Address</td>
+                                <td class="fs-7"><i class="bi bi-telephone text-muted me-1"></i>@c.PhoneNumber</td>
+                                <td class="fs-7"><i class="bi bi-envelope text-muted me-1"></i>@c.Email</td>
+                                <td class="text-end pe-4">
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="Edit" asp-route-accountNumber="@c.AccountNumber" class="btn btn-outline-primary fw-semibold" title="Edit Customer Details">
+                                            <i class="bi bi-pencil-square me-1"></i> Edit
+                                        </a>
+                                        <a asp-controller="Account" asp-action="Index" asp-route-accountNumber="@c.AccountNumber" class="btn btn-outline-secondary fw-semibold" title="View Portal Summary">
+                                            <i class="bi bi-eye me-1"></i> Portal View
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function filterCustomers() {
+            var input = document.getElementById('customerSearch');
+            var filter = input.value.toLowerCase();
+            var rows = document.querySelectorAll('#customersTable tbody tr.customer-row');
+
+            rows.forEach(function (row) {
+                var text = row.textContent.toLowerCase();
+                if (text.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
+}

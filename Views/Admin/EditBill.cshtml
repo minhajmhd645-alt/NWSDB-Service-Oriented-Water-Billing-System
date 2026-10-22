@@ -1,0 +1,154 @@
+@model NWSDB.Web.Models.EditBillViewModel
+@{
+    ViewData["Title"] = $"Edit Bill #{Model.BillId} - NWSDB Admin";
+}
+
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb fs-7">
+            <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Index" class="text-decoration-none">Admin Control Panel</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Bills" class="text-decoration-none">Bills</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Bill #@Model.BillId</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-9 col-xl-8">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-navy text-white p-4 border-0">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h4 class="fw-bold text-white mb-1"><i class="bi bi-pencil-square text-warning me-2"></i> Edit Bill Details</h4>
+                            <p class="text-white-50 fs-7 mb-0">Update billing details. Changes will be persisted via NWSDB.API.</p>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-warning text-dark font-monospace fs-7 px-3 py-2">#BILL-@Model.BillId</span>
+                            <div class="text-white-50 fs-8 mt-1">Account: @Model.AccountNumber</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> @ViewBag.ErrorMessage
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form asp-controller="Admin" asp-action="EditBill" asp-route-billId="@Model.BillId" method="post" novalidate>
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="BillId" />
+                        <input type="hidden" asp-for="AccountNumber" />
+
+                        <!-- Info Row -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-navy">Account Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-person-badge-fill"></i></span>
+                                    <input type="text" value="@Model.AccountNumber" class="form-control font-monospace bg-light text-primary fw-bold" readonly disabled />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="BillingMonth" class="form-label fw-semibold text-navy"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-calendar-month-fill"></i></span>
+                                    <input asp-for="BillingMonth" class="form-control" required />
+                                </div>
+                                <span asp-validation-for="BillingMonth" class="text-danger fs-7 d-block mt-1"></span>
+                            </div>
+                        </div>
+
+                        <!-- Meter Readings -->
+                        <div class="card border border-info-subtle bg-info-subtle rounded-3 p-3 mb-3">
+                            <h6 class="fw-bold text-info mb-3"><i class="bi bi-speedometer2 me-2"></i> Meter Readings</h6>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label asp-for="PreviousReading" class="form-label fw-semibold text-navy"></label>
+                                    <input asp-for="PreviousReading" id="prevReading" class="form-control text-center fw-bold" type="number" min="0" oninput="calcUnits()" required />
+                                    <span asp-validation-for="PreviousReading" class="text-danger fs-7 d-block mt-1"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="CurrentReading" class="form-label fw-semibold text-navy"></label>
+                                    <input asp-for="CurrentReading" id="currReading" class="form-control text-center fw-bold" type="number" min="0" oninput="calcUnits()" required />
+                                    <span asp-validation-for="CurrentReading" class="text-danger fs-7 d-block mt-1"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold text-navy">Units Consumed</label>
+                                    <input id="unitsDisplay" class="form-control text-center fw-bold bg-light text-info" type="text" readonly />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Billing Details -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-5">
+                                <label asp-for="BillAmount" class="form-label fw-semibold text-navy"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light fw-semibold text-success">Rs.</span>
+                                    <input asp-for="BillAmount" class="form-control fw-bold fs-6" type="number" step="0.01" min="0.01" required />
+                                </div>
+                                <span asp-validation-for="BillAmount" class="text-danger fs-7 d-block mt-1"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="DueDate" class="form-label fw-semibold text-navy"></label>
+                                <input asp-for="DueDate" id="dueDateInput" class="form-control" type="date" required />
+                                <span asp-validation-for="DueDate" class="text-danger fs-7 d-block mt-1"></span>
+                            </div>
+                            <div class="col-md-3">
+                                <label asp-for="Status" class="form-label fw-semibold text-navy"></label>
+                                <select asp-for="Status" class="form-select">
+                                    <option value="Unpaid">Unpaid</option>
+                                    <option value="Paid">Paid</option>
+                                    <option value="Overdue">Overdue</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <a asp-controller="Admin" asp-action="Bills" class="btn btn-outline-secondary px-4 fw-semibold">
+                                <i class="bi bi-arrow-left me-1"></i> Cancel
+                            </a>
+                            <div class="d-flex gap-2">
+                                <a asp-controller="Admin" asp-action="BillDetails" asp-route-billId="@Model.BillId" class="btn btn-outline-secondary fw-semibold">
+                                    <i class="bi bi-eye me-1"></i> View Details
+                                </a>
+                                <button type="submit" class="btn btn-primary px-4 fw-semibold shadow-sm">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Update Bill
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function calcUnits() {
+            var prev = parseInt(document.getElementById('prevReading').value) || 0;
+            var curr = parseInt(document.getElementById('currReading').value) || 0;
+            var units = Math.max(0, curr - prev);
+            document.getElementById('unitsDisplay').value = units + ' units';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            calcUnits();
+            // Format date for the date input
+            var dueDateInput = document.getElementById('dueDateInput');
+            if (dueDateInput && dueDateInput.value) {
+                try {
+                    var d = new Date(dueDateInput.value);
+                    if (!isNaN(d.getTime())) {
+                        dueDateInput.value = d.toISOString().split('T')[0];
+                    }
+                } catch(e) {}
+            }
+        });
+    </script>
+}

@@ -1,0 +1,126 @@
+@model NWSDB.Web.Models.AdminCreateCustomerViewModel
+@{
+    ViewData["Title"] = "Add Customer - NWSDB Admin Control Panel";
+}
+
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb fs-7">
+            <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Index" class="text-decoration-none">Admin Control Panel</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Customers" class="text-decoration-none">Customers</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add Customer</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+            <div class="card border-0 shadow-sm bg-white rounded-3">
+                <div class="card-header bg-navy text-white p-4 border-0">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h4 class="fw-bold text-white mb-1"><i class="bi bi-person-plus-fill text-warning me-2"></i> Register New Customer</h4>
+                            <p class="text-white-50 fs-7 mb-0">Create a new NWSDB customer account. Details will be persisted to SQL Database via NWSDB.API.</p>
+                        </div>
+                        <span class="badge bg-warning text-dark font-monospace fs-7 px-3 py-2">
+                            Auto Acc: @Model.AccountNumber
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> @ViewBag.ErrorMessage
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form asp-controller="Admin" asp-action="CreateCustomer" method="post" novalidate>
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label asp-for="AccountNumber" class="form-label fw-semibold text-navy"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-hash"></i></span>
+                                <input asp-for="AccountNumber" class="form-control font-monospace bg-light fw-bold text-primary" readonly />
+                            </div>
+                            <small class="form-text text-muted">Account number is automatically generated following NWSDB standard sequence.</small>
+                            <span asp-validation-for="AccountNumber" class="text-danger fs-7 d-block mt-1"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="FullName" class="form-label fw-semibold text-navy"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-person-fill"></i></span>
+                                <input asp-for="FullName" class="form-control" placeholder="e.g. Sunil Perera" required />
+                            </div>
+                            <span asp-validation-for="FullName" class="text-danger fs-7 d-block mt-1"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label fw-semibold text-navy"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-geo-alt-fill"></i></span>
+                                <textarea asp-for="Address" class="form-control" rows="2" placeholder="e.g. 123 Galle Road, Colombo 03" required></textarea>
+                            </div>
+                            <span asp-validation-for="Address" class="text-danger fs-7 d-block mt-1"></span>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="PhoneNumber" class="form-label fw-semibold text-navy"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-telephone-fill"></i></span>
+                                    <input asp-for="PhoneNumber" class="form-control" placeholder="e.g. 0771234567" required />
+                                </div>
+                                <span asp-validation-for="PhoneNumber" class="text-danger fs-7 d-block mt-1"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label fw-semibold text-navy"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-envelope-fill"></i></span>
+                                    <input asp-for="Email" type="email" class="form-control" placeholder="e.g. customer@example.com" required />
+                                </div>
+                                <span asp-validation-for="Email" class="text-danger fs-7 d-block mt-1"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="AccountStatus" class="form-label fw-semibold text-navy"></label>
+                                <select asp-for="AccountStatus" class="form-select">
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive / Suspended</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="InitialBillAmount" class="form-label fw-semibold text-navy"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">Rs.</span>
+                                    <input asp-for="InitialBillAmount" class="form-control" type="number" step="0.01" min="0" placeholder="0.00" />
+                                </div>
+                                <small class="form-text text-muted">Optional initial bill amount to generate immediately.</small>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <a asp-controller="Admin" asp-action="Customers" class="btn btn-outline-secondary px-4 fw-semibold">
+                                <i class="bi bi-arrow-left me-1"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary px-4 fw-semibold shadow-sm">
+                                <i class="bi bi-check-circle-fill me-1"></i> Create Customer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

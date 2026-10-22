@@ -1,0 +1,55 @@
+@model PaymentFailureViewModel
+@{
+    ViewData["Title"] = "Payment Failed";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card card-custom border-top border-4 border-danger overflow-hidden shadow-lg">
+                <div class="card-body p-4 p-md-5 text-center">
+                    <div class="stat-icon bg-danger-subtle text-danger mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2.5rem;">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </div>
+
+                    <h2 class="fw-bold text-navy mb-1">Payment Rejection Notice</h2>
+                    <p class="text-muted fs-7 mb-4">Your payment request could not be completed by the bank payment gateway.</p>
+
+                    <div class="p-4 bg-danger-subtle text-danger border border-danger-subtle rounded-3 text-start mb-4 fs-7">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-exclamation-triangle-fill fs-4 me-2"></i>
+                            <h6 class="fw-bold mb-0">Reason for Failure:</h6>
+                        </div>
+                        <p class="fs-6 fw-semibold mb-0 ps-4 ms-2">@Model.ErrorMessage</p>
+                    </div>
+
+                    <div class="bg-light p-3 rounded-3 text-start mb-4 fs-7 border">
+                        <div class="row g-2">
+                            <div class="col-sm-6">
+                                <span class="text-muted">Account Number:</span>
+                                <strong>@Model.AccountNumber</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted">Bill Reference:</span>
+                                <strong>#BILL-@Model.BillId</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted">Attempted Amount:</span>
+                                <strong>Rs. @Model.Amount.ToString("N2")</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted">Bill Status:</span>
+                                <span class="badge bg-warning-subtle text-dark border">Unchanged (Unpaid)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                        <a asp-controller="Payments" asp-action="Pay" asp-route-billId="@Model.BillId" class="btn btn-primary fw-semibold px-4"><i class="bi bi-arrow-clockwise me-1"></i> Try Again</a>
+                        <a asp-controller="Bills" asp-action="Unpaid" class="btn btn-outline-secondary fw-semibold px-4">Back to Unpaid Bills</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
