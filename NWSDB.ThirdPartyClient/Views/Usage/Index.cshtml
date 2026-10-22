@@ -1,0 +1,134 @@
+@model NWSDB.ThirdPartyClient.Models.CustomerLookupViewModel
+@{
+    ViewData["Title"] = "Water Usage";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Water Usage</li>
+            </ol>
+        </nav>
+        <h2 class="fw-bold"><i class="bi bi-speedometer2 me-2 text-info"></i> Current Water Usage</h2>
+        <p class="text-muted">Retrieve real-time meter readings and water consumption metrics from NWSDB REST API.</p>
+    </div>
+</div>
+
+<!-- Search Card -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+        <form asp-controller="Usage" asp-action="Index" method="get" class="row g-3">
+            <div class="col-md-8 col-lg-9">
+                <label for="accountNumber" class="form-label fw-semibold">Account Number</label>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text bg-light"><i class="bi bi-person-vcard text-muted"></i></span>
+                    <input type="text" id="accountNumber" name="accountNumber" class="form-control" placeholder="e.g. NWSDB10001" value="@Model.AccountNumber" required />
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-info btn-lg w-100 fw-bold text-white"><i class="bi bi-search me-1"></i> Get Meter Usage</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model.IsServiceUnavailable)
+{
+    <div class="alert alert-danger shadow-sm rounded-3 p-4 mb-4">
+        <i class="bi bi-cloud-slash-fill me-2 fs-4"></i> Unable to connect to the NWSDB service. Please try again later.
+    </div>
+}
+else if (Model.IsNotFound)
+{
+    <div class="alert alert-warning shadow-sm rounded-3 p-4 mb-4">
+        <i class="bi bi-exclamation-triangle-fill me-2 fs-4"></i> Customer account not found.
+    </div>
+}
+
+@if (Model.Customer != null)
+{
+    <div class="card border-0 shadow-sm mb-4 bg-info-subtle border-start border-info border-4">
+        <div class="card-body p-3 d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="fw-bold mb-0 text-info-emphasis">Customer: @Model.Customer.FullName</h5>
+                <span class="text-muted fs-7">Account: @Model.Customer.AccountNumber &bull; Location: @Model.Customer.Address</span>
+            </div>
+            <div>
+                @if (Model.CurrentUsage != null)
+                {
+                    <span class="badge bg-info text-dark fs-6 px-3 py-2">Reading Month: @Model.CurrentUsage.ReadingMonth</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary fs-6 px-3 py-2">No Usage Record</span>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.CurrentUsage != null)
+{
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-dark text-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-droplet-fill text-cyan me-2"></i> Current Reading & Consumption Metrics</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="text-center py-3 mb-4 bg-light rounded-4 border">
+                        <span class="text-muted fs-7 uppercase fw-bold">Units Consumed</span>
+                        <div class="display-3 fw-bold text-info my-2">@Model.CurrentUsage.UnitsConsumed</div>
+                        <span class="badge bg-secondary font-monospace">Water Volume Metrics</span>
+                    </div>
+
+                    <ul class="list-group list-group-flush fs-6">
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <span class="text-muted"><i class="bi bi-person-vcard me-2 text-info"></i> Account Number</span>
+                            <span class="fw-bold font-monospace">@(Model.Customer?.AccountNumber ?? Model.AccountNumber)</span>
+                        </li>
+                        @if (Model.Customer != null)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                                <span class="text-muted"><i class="bi bi-person me-2 text-info"></i> Customer Name</span>
+                                <span class="fw-semibold">@Model.Customer.FullName</span>
+                            </li>
+                        }
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <span class="text-muted"><i class="bi bi-calendar-event me-2 text-info"></i> Reading Month</span>
+                            <span class="fw-bold text-dark">@Model.CurrentUsage.ReadingMonth</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <span class="text-muted"><i class="bi bi-arrow-left-circle me-2 text-info"></i> Previous Reading</span>
+                            <span class="fw-semibold">@Model.CurrentUsage.PreviousReading</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <span class="text-muted"><i class="bi bi-arrow-right-circle me-2 text-info"></i> Current Reading</span>
+                            <span class="fw-semibold">@Model.CurrentUsage.CurrentReading</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <span class="text-muted"><i class="bi bi-clock-history me-2 text-info"></i> Recorded Date</span>
+                            <span class="fw-semibold font-monospace">@Model.CurrentUsage.RecordedDate.ToString("yyyy-MM-dd HH:mm:ss")</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else if (!string.IsNullOrEmpty(Model.ErrorMessage) && !Model.IsServiceUnavailable && !Model.IsNotFound)
+{
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm p-4 text-center">
+                <div class="py-4">
+                    <i class="bi bi-droplet-slash display-4 text-secondary mb-3 d-block"></i>
+                    <h5 class="fw-bold text-dark">No Usage Data Available</h5>
+                    <p class="text-muted mb-0">@Model.ErrorMessage</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}

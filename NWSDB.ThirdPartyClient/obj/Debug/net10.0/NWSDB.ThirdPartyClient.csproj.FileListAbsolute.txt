@@ -1,0 +1,70 @@
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\bin\Debug\net10.0\appsettings.Development.json
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\bin\Debug\net10.0\appsettings.json
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\bin\Debug\net10.0\NWSDB.ThirdPartyClient.staticwebassets.runtime.json
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\bin\Debug\net10.0\NWSDB.ThirdPartyClient.staticwebassets.endpoints.json
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\bin\Debug\net10.0\NWSDB.ThirdPartyClient.exe
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\bin\Debug\net10.0\NWSDB.ThirdPartyClient.deps.json
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\bin\Debug\net10.0\NWSDB.ThirdPartyClient.runtimeconfig.json
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\bin\Debug\net10.0\NWSDB.ThirdPartyClient.dll
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\bin\Debug\net10.0\NWSDB.ThirdPartyClient.pdb
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.ThirdPartyClient.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.ThirdPartyClient.AssemblyInfoInputs.cache
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.ThirdPartyClient.AssemblyInfo.cs
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.ThirdPartyClient.csproj.CoreCompileInputs.cache
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.ThirdPartyClient.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.ThirdPartyClient.RazorAssemblyInfo.cache
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.ThirdPartyClient.RazorAssemblyInfo.cs
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\rjimswa.dswa.cache.json
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\scopedcss\bundle\NWSDB.ThirdPartyClient.styles.css
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\compressed\nb14jc51bi-{0}-ri6kwjanv9-ri6kwjanv9.gz
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\compressed\8n7pzsp04k-{0}-d1ckixwnd8-d1ckixwnd8.gz
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\staticwebassets.build.json
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\staticwebassets.build.json.cache
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\staticwebassets.development.json
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\staticwebassets.build.endpoints.json
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\swae.build.ex.cache
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.ThirdPartyClient.dll
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\refint\NWSDB.ThirdPartyClient.dll
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.ThirdPartyClient.pdb
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.ThirdPartyClient.genruntimeconfig.cache
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\ref\NWSDB.ThirdPartyClient.dll
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
+C:\Users\USER\Desktop\socc\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.Th.C449D995.Up2Date
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\bin\Debug\net10.0\appsettings.Development.json
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\bin\Debug\net10.0\appsettings.json
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\bin\Debug\net10.0\NWSDB.ThirdPartyClient.staticwebassets.endpoints.json
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\bin\Debug\net10.0\NWSDB.ThirdPartyClient.staticwebassets.runtime.json
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\bin\Debug\net10.0\NWSDB.ThirdPartyClient.exe
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\bin\Debug\net10.0\NWSDB.ThirdPartyClient.deps.json
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\bin\Debug\net10.0\NWSDB.ThirdPartyClient.runtimeconfig.json
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\bin\Debug\net10.0\NWSDB.ThirdPartyClient.dll
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\bin\Debug\net10.0\NWSDB.ThirdPartyClient.pdb
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.ThirdPartyClient.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.ThirdPartyClient.AssemblyInfoInputs.cache
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.ThirdPartyClient.AssemblyInfo.cs
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.ThirdPartyClient.csproj.CoreCompileInputs.cache
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.ThirdPartyClient.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.ThirdPartyClient.RazorAssemblyInfo.cache
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.ThirdPartyClient.RazorAssemblyInfo.cs
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\rjimswa.dswa.cache.json
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\scopedcss\bundle\NWSDB.ThirdPartyClient.styles.css
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\compressed\nb14jc51bi-{0}-ri6kwjanv9-ri6kwjanv9.gz
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\compressed\8n7pzsp04k-{0}-d1ckixwnd8-d1ckixwnd8.gz
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\staticwebassets.build.json
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\staticwebassets.build.json.cache
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\staticwebassets.development.json
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\staticwebassets.build.endpoints.json
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\swae.build.ex.cache
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.ThirdPartyClient.dll
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\refint\NWSDB.ThirdPartyClient.dll
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.ThirdPartyClient.pdb
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.ThirdPartyClient.genruntimeconfig.cache
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\ref\NWSDB.ThirdPartyClient.dll
+C:\Users\USER\Desktop\NWSDB PROJECT (SOC)\NWSDB.ThirdPartyClient\obj\Debug\net10.0\NWSDB.Th.C449D995.Up2Date

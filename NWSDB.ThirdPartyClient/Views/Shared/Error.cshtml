@@ -1,0 +1,31 @@
+@model NWSDB.ThirdPartyClient.Models.ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-danger shadow-sm">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i> Application Error</h4>
+            </div>
+            <div class="card-body p-4">
+                <p class="fs-5 text-dark">@Model.Message</p>
+                <div class="alert alert-secondary">
+                    NWSDB services are temporarily unavailable or encountered an unexpected condition. Please try again later.
+                </div>
+
+                @if (Model.ShowRequestId)
+                {
+                    <p class="text-muted fs-7">
+                        <strong>Request ID:</strong> <code>@Model.RequestId</code>
+                    </p>
+                }
+
+                <div class="mt-4">
+                    <a href="/" class="btn btn-outline-primary"><i class="bi bi-house me-1"></i> Return to Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

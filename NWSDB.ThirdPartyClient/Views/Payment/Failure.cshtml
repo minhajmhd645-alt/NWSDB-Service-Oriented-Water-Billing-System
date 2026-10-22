@@ -1,0 +1,59 @@
+@model NWSDB.ThirdPartyClient.Models.PaymentResultViewModel
+@{
+    ViewData["Title"] = "Payment Rejected";
+}
+
+<div class="row justify-content-center my-4">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="card-header bg-danger text-white text-center p-5">
+                <div class="failure-icon bg-white text-danger rounded-circle d-inline-flex align-items-center justify-content-center p-3 mb-3 shadow">
+                    <i class="bi bi-x-lg display-3"></i>
+                </div>
+                <h2 class="fw-bold mb-1">Payment Rejected</h2>
+                <p class="lead mb-0 text-white-75">The payment transaction could not be processed by NWSDB services.</p>
+            </div>
+
+            <div class="card-body p-4 p-md-5">
+                <div class="alert alert-danger d-flex align-items-center rounded-3 p-3 mb-4">
+                    <i class="bi bi-exclamation-octagon-fill fs-3 me-3 text-danger"></i>
+                    <div>
+                        <h6 class="alert-heading fw-bold mb-1">Rejection Reason</h6>
+                        <p class="mb-0 fs-6">@Model.FailureReason</p>
+                    </div>
+                </div>
+
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">Attempt Summary</h5>
+
+                <div class="row g-3 fs-6 mb-4">
+                    <div class="col-sm-6 text-muted">Bill Reference:</div>
+                    <div class="col-sm-6 fw-bold text-sm-end font-monospace">NWSDB-BILL-@Model.BillId</div>
+
+                    <div class="col-sm-6 text-muted">Customer Account:</div>
+                    <div class="col-sm-6 fw-bold text-sm-end font-monospace">@Model.AccountNumber</div>
+
+                    <div class="col-sm-6 text-muted">Attempted Amount:</div>
+                    <div class="col-sm-6 fw-bold text-danger text-sm-end">LKR @Model.AttemptedAmount.ToString("N2")</div>
+
+                    <div class="col-sm-6 text-muted">Payment Method:</div>
+                    <div class="col-sm-6 fw-semibold text-sm-end">@Model.PaymentMethod</div>
+
+                    <div class="col-sm-6 text-muted">Target Bank Account:</div>
+                    <div class="col-sm-6 fw-semibold text-sm-end font-monospace">@Model.BankAccountNumber</div>
+
+                    <div class="col-sm-6 text-muted">Current Bill Status:</div>
+                    <div class="col-sm-6 text-sm-end"><span class="badge bg-warning text-dark fs-7">Unpaid / Remained Outstanding</span></div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-between border-top pt-4">
+                    <a asp-controller="Bills" asp-action="Unpaid" asp-route-accountNumber="@Model.AccountNumber" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Bills
+                    </a>
+                    <a asp-controller="Payment" asp-action="Pay" asp-route-billId="@Model.BillId" asp-route-accountNumber="@Model.AccountNumber" asp-route-amount="@Model.AttemptedAmount" class="btn btn-danger btn-lg fw-bold">
+                        <i class="bi bi-arrow-repeat me-1"></i> Try Again
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

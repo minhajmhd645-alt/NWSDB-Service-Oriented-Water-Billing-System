@@ -1,0 +1,141 @@
+@{
+    ViewData["Title"] = "Partner Portal Overview";
+}
+
+<div class="row align-items-center bg-gradient-dark text-white rounded-4 p-4 p-lg-5 mb-4 shadow">
+    <div class="col-lg-8">
+        <span class="badge bg-cyan text-dark mb-2 px-3 py-2 uppercase fw-bold">Third-Party NWSDB Service Integration</span>
+        <h1 class="display-5 fw-bold mb-3">WaterPay Partner Portal</h1>
+        <p class="lead text-light-50 mb-4">
+            Welcome to the Third-Party Organization Portal. This application demonstrates external organization access to NWSDB utility services strictly via secured REST APIs without direct database access.
+        </p>
+        
+        <!-- Search Box -->
+        <form asp-controller="Customer" asp-action="Index" method="get" class="row g-2 align-items-center">
+            <div class="col-sm-8 col-md-6">
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text bg-white text-primary border-0"><i class="bi bi-search"></i></span>
+                    <input type="text" name="accountNumber" class="form-control border-0" placeholder="Enter Account (e.g. NWSDB10004)" required />
+                </div>
+            </div>
+            <div class="col-sm-4 col-md-4">
+                <button type="submit" class="btn btn-cyan btn-lg w-100 fw-bold"><i class="bi bi-arrow-right-circle me-1"></i> Search Customer</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-4 text-center mt-4 mt-lg-0 d-none d-lg-block">
+        <div class="arch-badge p-3 border border-secondary border-opacity-50 rounded-3 bg-dark bg-opacity-50">
+            <div class="text-cyan fw-bold mb-2"><i class="bi bi-diagram-3 me-1"></i> REST API Boundary</div>
+            <div class="d-flex align-items-center justify-content-center text-white-50 fs-7 my-1">
+                <span class="badge bg-secondary">Third-Party Client</span>
+                <i class="bi bi-arrow-right mx-2 text-cyan"></i>
+                <span class="badge bg-primary">NWSDB REST API</span>
+            </div>
+            <div class="d-flex align-items-center justify-content-center text-white-50 fs-7 my-1">
+                <span class="badge bg-primary">NWSDB REST API</span>
+                <i class="bi bi-arrow-right mx-2 text-cyan"></i>
+                <span class="badge bg-success">NWSDB SQL Server</span>
+            </div>
+            <p class="text-muted fs-8 mt-2 mb-0">Zero direct DB access &bull; Zero Bank API direct calls</p>
+        </div>
+    </div>
+</div>
+
+<!-- Features Grid -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm hover-lift">
+            <div class="card-body p-4">
+                <div class="feature-icon bg-primary-subtle text-primary rounded-3 mb-3 p-3 d-inline-block">
+                    <i class="bi bi-person-vcard fs-3"></i>
+                </div>
+                <h5 class="fw-bold">Customer Services</h5>
+                <p class="text-muted fs-7">Retrieve complete customer profiles, account summaries, current balance, and status via REST APIs.</p>
+                <a asp-controller="Customer" asp-action="Index" asp-route-accountNumber="NWSDB10004" class="btn btn-sm btn-outline-primary fw-medium">
+                    Demo Account (NWSDB10004) <i class="bi bi-chevron-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm hover-lift">
+            <div class="card-body p-4">
+                <div class="feature-icon bg-warning-subtle text-warning rounded-3 mb-3 p-3 d-inline-block">
+                    <i class="bi bi-receipt-cutoff fs-3"></i>
+                </div>
+                <h5 class="fw-bold">Bill & Usage Lookup</h5>
+                <p class="text-muted fs-7">Access complete billing histories, filter pending unpaid bills, and monitor real-time water usage metrics.</p>
+                <a asp-controller="Bills" asp-action="Unpaid" asp-route-accountNumber="NWSDB10004" class="btn btn-sm btn-outline-warning text-dark fw-medium">
+                    Unpaid Bills <i class="bi bi-chevron-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm hover-lift">
+            <div class="card-body p-4">
+                <div class="feature-icon bg-success-subtle text-success rounded-3 mb-3 p-3 d-inline-block">
+                    <i class="bi bi-credit-card-check fs-3"></i>
+                </div>
+                <h5 class="fw-bold">Integrated Payment Processing</h5>
+                <p class="text-muted fs-7">Initiate bill payments routed through NWSDB API to Bank API with real-time response feedback and history logs.</p>
+                <a asp-controller="Payment" asp-action="History" asp-route-accountNumber="NWSDB10004" class="btn btn-sm btn-outline-success fw-medium">
+                    Payment History <i class="bi bi-chevron-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Accounts List -->
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-people me-2 text-primary"></i> Sample NWSDB Customer Accounts for Testing</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Account Number</th>
+                        <th>Customer Name</th>
+                        <th>Location</th>
+                        <th>Test Scenarios</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="badge bg-dark font-monospace">NWSDB10004</span></td>
+                        <td class="fw-semibold">Samanthi de Silva</td>
+                        <td>Negombo</td>
+                        <td><span class="badge bg-warning text-dark">Overdue / Unpaid Bills</span></td>
+                        <td class="text-end">
+                            <a asp-controller="Customer" asp-action="Details" asp-route-accountNumber="NWSDB10004" class="btn btn-sm btn-primary"><i class="bi bi-eye"></i> Summary</a>
+                            <a asp-controller="Bills" asp-action="Unpaid" asp-route-accountNumber="NWSDB10004" class="btn btn-sm btn-outline-warning text-dark"><i class="bi bi-wallet2"></i> Pay Bills</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-dark font-monospace">NWSDB10001</span></td>
+                        <td class="fw-semibold">Sunil Perera</td>
+                        <td>Colombo 03</td>
+                        <td><span class="badge bg-info text-dark">Paid & Unpaid Bills</span></td>
+                        <td class="text-end">
+                            <a asp-controller="Customer" asp-action="Details" asp-route-accountNumber="NWSDB10001" class="btn btn-sm btn-primary"><i class="bi bi-eye"></i> Summary</a>
+                            <a asp-controller="Bills" asp-action="Index" asp-route-accountNumber="NWSDB10001" class="btn btn-sm btn-outline-secondary"><i class="bi bi-list"></i> Bills</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-dark font-monospace">NWSDB10002</span></td>
+                        <td class="fw-semibold">Nimal Silva</td>
+                        <td>Kandy</td>
+                        <td><span class="badge bg-danger">Multiple Overdue Bills</span></td>
+                        <td class="text-end">
+                            <a asp-controller="Customer" asp-action="Details" asp-route-accountNumber="NWSDB10002" class="btn btn-sm btn-primary"><i class="bi bi-eye"></i> Summary</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

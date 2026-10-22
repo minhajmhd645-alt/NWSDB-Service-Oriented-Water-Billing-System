@@ -1,0 +1,214 @@
+@model NWSDB.ThirdPartyClient.Models.CustomerLookupViewModel
+@{
+    ViewData["Title"] = "Customer Summary Dashboard";
+}
+
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li class="breadcrumb-item"><a asp-controller="Customer" asp-action="Index">Customer</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Summary</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold mb-0"><i class="bi bi-speedometer2 me-2 text-primary"></i> Customer Summary Dashboard</h2>
+        </div>
+        <div>
+            <a asp-controller="Customer" asp-action="Index" class="btn btn-outline-secondary btn-sm"><i class="bi bi-search me-1"></i> New Search</a>
+        </div>
+    </div>
+</div>
+
+@if (Model.Summary != null && Model.Customer != null)
+{
+    <!-- Customer Header Banner -->
+    <div class="card border-0 shadow-sm mb-4 bg-primary text-white">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-lg bg-white text-primary rounded-circle p-3 me-3 fs-3 fw-bold d-none d-sm-block">
+                            @Model.Customer.FullName.Substring(0, 1)
+                        </div>
+                        <div>
+                            <h3 class="fw-bold mb-1">@Model.Customer.FullName</h3>
+                            <div class="d-flex flex-wrap gap-2 text-white-75 fs-7">
+                                <span><i class="bi bi-person-vcard me-1"></i> @Model.Customer.AccountNumber</span> &bull;
+                                <span><i class="bi bi-geo-alt me-1"></i> @Model.Customer.Address</span> &bull;
+                                <span><i class="bi bi-telephone me-1"></i> @Model.Customer.PhoneNumber</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <a asp-controller="Bills" asp-action="Unpaid" asp-route-accountNumber="@Model.Customer.AccountNumber" class="btn btn-warning btn-lg font-monospace fw-bold text-dark shadow-sm">
+                        <i class="bi bi-wallet2 me-1"></i> Pay Unpaid Bills (@Model.Summary.NumberOfUnpaidBills)
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Metrics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-3">
+                    <div class="text-muted fs-7 font-uppercase fw-semibold">Outstanding Balance</div>
+                    <div class="fs-3 fw-bold text-danger my-1">LKR @Model.Summary.CurrentOutstandingAmount.ToString("N2")</div>
+                    <div class="fs-8 text-muted">Total unpaid bill amount</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-3">
+                    <div class="text-muted fs-7 font-uppercase fw-semibold">Unpaid Bills Count</div>
+                    <div class="fs-3 fw-bold text-warning my-1">@Model.Summary.NumberOfUnpaidBills</div>
+                    <div class="fs-8 text-muted">Pending bill statements</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-3">
+                    <div class="text-muted fs-7 font-uppercase fw-semibold">Current Usage</div>
+                    <div class="fs-3 fw-bold text-info my-1">
+                        @(Model.Summary.CurrentWaterUsage?.UnitsConsumed ?? 0) <span class="fs-6">Units</span>
+                    </div>
+                    <div class="fs-8 text-muted">Month: @(Model.Summary.CurrentWaterUsage?.ReadingMonth ?? "N/A")</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-3">
+                    <div class="text-muted fs-7 font-uppercase fw-semibold">Latest Payment</div>
+                    <div class="fs-3 fw-bold text-success my-1">
+                        @(Model.Summary.LatestPayment != null ? $"LKR {Model.Summary.LatestPayment.Amount:N0}" : "None")
+                    </div>
+                    <div class="fs-8 text-muted">
+                        @(Model.Summary.LatestPayment != null ? Model.Summary.LatestPayment.PaymentDate.ToString("yyyy-MM-dd") : "No payment history")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Breakdowns -->
+    <div class="row g-4">
+        <!-- Latest Bill Details -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-file-earmark-text text-primary me-2"></i> Latest Bill Details</h5>
+                    <a asp-controller="Bills" asp-action="Index" asp-route-accountNumber="@Model.Customer.AccountNumber" class="btn btn-sm btn-link">View All</a>
+                </div>
+                <div class="card-body p-4">
+                    @if (Model.Summary.LatestBill != null)
+                    {
+                        var bill = Model.Summary.LatestBill;
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="fs-6 fw-bold">Billing Period: @bill.BillingMonth</span>
+                            @if (bill.Status == "Paid")
+                            {
+                                <span class="badge bg-success">Paid</span>
+                            }
+                            else if (bill.Status == "Overdue")
+                            {
+                                <span class="badge bg-danger">Overdue</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Unpaid</span>
+                            }
+                        </div>
+
+                        <div class="row g-2 fs-7 mb-3">
+                            <div class="col-6 text-muted">Bill ID / Ref:</div>
+                            <div class="col-6 fw-semibold text-end">BILL-@bill.BillId</div>
+                            <div class="col-6 text-muted">Previous Reading:</div>
+                            <div class="col-6 fw-semibold text-end">@bill.PreviousReading</div>
+                            <div class="col-6 text-muted">Current Reading:</div>
+                            <div class="col-6 fw-semibold text-end">@bill.CurrentReading</div>
+                            <div class="col-6 text-muted">Units Consumed:</div>
+                            <div class="col-6 fw-semibold text-end">@bill.UnitsConsumed</div>
+                            <div class="col-6 text-muted">Due Date:</div>
+                            <div class="col-6 fw-semibold text-end">@bill.DueDate.ToString("yyyy-MM-dd")</div>
+                        </div>
+
+                        <div class="p-3 bg-light rounded-3 d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">Total Bill Amount:</span>
+                            <span class="fs-4 fw-bold text-primary">LKR @bill.BillAmount.ToString("N2")</span>
+                        </div>
+
+                        @if (bill.Status != "Paid")
+                        {
+                            <div class="mt-3">
+                                <a asp-controller="Payment" asp-action="Pay" asp-route-billId="@bill.BillId" asp-route-accountNumber="@Model.Customer.AccountNumber" asp-route-amount="@bill.BillAmount" asp-route-billingMonth="@bill.BillingMonth" class="btn btn-success w-100 fw-bold">
+                                    <i class="bi bi-credit-card me-1"></i> Pay This Bill Now
+                                </a>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No billing history found for this account.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Water Usage & Payment Summary -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-droplet-half text-cyan me-2"></i> Water Consumption & Payment</h5>
+                    <a asp-controller="Usage" asp-action="Index" asp-route-accountNumber="@Model.Customer.AccountNumber" class="btn btn-sm btn-link">Usage History</a>
+                </div>
+                <div class="card-body p-4">
+                    @if (Model.Summary.CurrentWaterUsage != null)
+                    {
+                        var usage = Model.Summary.CurrentWaterUsage;
+                        <h6 class="fw-bold text-secondary mb-3">Current Meter Reading (@usage.ReadingMonth)</h6>
+                        <div class="progress mb-3" style="height: 25px;">
+                            <div class="progress-bar bg-info text-dark fw-bold" role="progressbar" style="width: 100%;">
+                                Units Consumed: @usage.UnitsConsumed
+                            </div>
+                        </div>
+                        <div class="row g-2 fs-7 mb-4">
+                            <div class="col-6 text-muted">Reading Month:</div>
+                            <div class="col-6 fw-semibold text-end">@usage.ReadingMonth</div>
+                            <div class="col-6 text-muted">Meter Reading:</div>
+                            <div class="col-6 fw-semibold text-end">@usage.PreviousReading &rarr; @usage.CurrentReading</div>
+                            <div class="col-6 text-muted">Recorded Date:</div>
+                            <div class="col-6 fw-semibold text-end">@usage.RecordedDate.ToString("yyyy-MM-dd HH:mm")</div>
+                        </div>
+                    }
+
+                    <hr />
+
+                    <h6 class="fw-bold text-secondary mb-3">Latest Payment Activity</h6>
+                    @if (Model.Summary.LatestPayment != null)
+                    {
+                        var pay = Model.Summary.LatestPayment;
+                        <div class="p-3 border rounded-3 bg-light-subtle">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <strong class="text-success"><i class="bi bi-check-circle-fill me-1"></i> @pay.Status</strong>
+                                <span class="fs-7 text-muted">@pay.PaymentDate.ToString("yyyy-MM-dd")</span>
+                            </div>
+                            <div class="fs-7 text-muted mb-1">Transaction Ref: <code class="text-dark font-monospace">@pay.TransactionId</code></div>
+                            <div class="fw-bold text-dark">Amount Paid: LKR @pay.Amount.ToString("N2") (@pay.PaymentMethod)</div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0 fs-7">No payment history recorded for this customer.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}

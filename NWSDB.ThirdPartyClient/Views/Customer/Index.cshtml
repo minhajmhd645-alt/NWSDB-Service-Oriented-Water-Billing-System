@@ -1,0 +1,184 @@
+@model NWSDB.ThirdPartyClient.Models.CustomerLookupViewModel
+@{
+    ViewData["Title"] = "Customer Account Lookup";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Customer Lookup</li>
+            </ol>
+        </nav>
+        <h2 class="fw-bold"><i class="bi bi-search me-2 text-primary"></i> Customer Account Lookup</h2>
+        <p class="text-muted">Retrieve customer demographic data and account summaries from NWSDB REST API.</p>
+    </div>
+</div>
+
+<!-- Search Card -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+        <form asp-controller="Customer" asp-action="Index" method="get" class="row g-3">
+            <div class="col-md-8 col-lg-9">
+                <label for="accountNumber" class="form-label fw-semibold">Account Number</label>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text bg-light"><i class="bi bi-person-vcard text-muted"></i></span>
+                    <input type="text" id="accountNumber" name="accountNumber" class="form-control" placeholder="e.g. NWSDB10004" value="@Model.AccountNumber" required />
+                </div>
+                <div class="form-text">Enter the 10-character NWSDB customer account number.</div>
+            </div>
+            <div class="col-md-4 col-lg-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-cyan btn-lg w-100 fw-bold"><i class="bi bi-search me-1"></i> Search Account</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model.IsServiceUnavailable)
+{
+    <div class="alert alert-danger d-flex align-items-center shadow-sm rounded-3 p-4 mb-4" role="alert">
+        <i class="bi bi-cloud-slash-fill fs-1 me-3 text-danger"></i>
+        <div>
+            <h5 class="alert-heading fw-bold mb-1">Service Temporarily Unavailable</h5>
+            <p class="mb-0">Unable to connect to the NWSDB service. Please make sure the NWSDB API is running and try again.</p>
+        </div>
+    </div>
+}
+else if (Model.IsNotFound)
+{
+    <div class="alert alert-warning d-flex align-items-center shadow-sm rounded-3 p-4 mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill fs-1 me-3 text-warning"></i>
+        <div>
+            <h5 class="alert-heading fw-bold mb-1">Account Not Found</h5>
+            <p class="mb-0">Customer account not found.</p>
+        </div>
+    </div>
+}
+else if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger shadow-sm rounded-3 p-4 mb-4">
+        <i class="bi bi-x-circle-fill me-2"></i> @Model.ErrorMessage
+    </div>
+}
+
+<!-- Customer Results -->
+@if (Model.Customer != null)
+{
+    <div class="row g-4">
+        <!-- Customer Details Profile Card -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-person-fill me-2"></i> Customer Profile</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <div class="avatar-circle bg-primary-subtle text-primary mx-auto mb-2 display-6 fw-bold">
+                            @Model.Customer.FullName.Substring(0, 1)
+                        </div>
+                        <h4 class="fw-bold mb-0">@Model.Customer.FullName</h4>
+                        <span class="badge bg-dark font-monospace mt-1 px-3 py-1">@Model.Customer.AccountNumber</span>
+                    </div>
+
+                    <ul class="list-group list-group-flush border-top">
+                        <li class="list-group-item d-flex justify-content-between py-3">
+                            <span class="text-muted"><i class="bi bi-geo-alt me-2 text-primary"></i> Address</span>
+                            <span class="fw-semibold text-end">@Model.Customer.Address</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between py-3">
+                            <span class="text-muted"><i class="bi bi-telephone me-2 text-primary"></i> Phone</span>
+                            <span class="fw-semibold">@Model.Customer.PhoneNumber</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between py-3">
+                            <span class="text-muted"><i class="bi bi-envelope me-2 text-primary"></i> Email</span>
+                            <span class="fw-semibold">@Model.Customer.Email</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between py-3">
+                            <span class="text-muted"><i class="bi bi-check-circle me-2 text-primary"></i> Account Status</span>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle">Active Customer</span>
+                        </li>
+                    </ul>
+
+                    <div class="mt-4 d-grid gap-2">
+                        <a asp-controller="Customer" asp-action="Details" asp-route-accountNumber="@Model.Customer.AccountNumber" class="btn btn-outline-primary">
+                            <i class="bi bi-speedometer2 me-1"></i> Full Customer Summary Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Metrics -->
+        <div class="col-lg-7">
+            @if (Model.Summary != null)
+            {
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6">
+                        <div class="card border-0 shadow-sm bg-danger-subtle border-start border-danger border-4">
+                            <div class="card-body p-4">
+                                <div class="text-danger-emphasis fs-7 fw-bold uppercase">Outstanding Balance</div>
+                                <div class="display-6 fw-bold text-danger my-1">LKR @Model.Summary.CurrentOutstandingAmount.ToString("N2")</div>
+                                <div class="fs-7 text-danger-emphasis">Unpaid Bills: <strong>@Model.Summary.NumberOfUnpaidBills</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="card border-0 shadow-sm bg-info-subtle border-start border-info border-4">
+                            <div class="card-body p-4">
+                                <div class="text-info-emphasis fs-7 fw-bold uppercase">Current Usage</div>
+                                <div class="display-6 fw-bold text-info my-1">
+                                    @(Model.Summary.CurrentWaterUsage?.UnitsConsumed ?? 0) <span class="fs-5">Units</span>
+                                </div>
+                                <div class="fs-7 text-info-emphasis">Month: <strong>@(Model.Summary.CurrentWaterUsage?.ReadingMonth ?? "N/A")</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Quick Action Links -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-grid-3x3-gap me-2 text-primary"></i> Available Services</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="list-group list-group-flush">
+                        <a asp-controller="Bills" asp-action="Unpaid" asp-route-accountNumber="@Model.Customer.AccountNumber" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                            <div>
+                                <i class="bi bi-exclamation-circle text-warning fs-5 me-2"></i>
+                                <strong class="text-dark">Unpaid Bills</strong>
+                                <div class="fs-7 text-muted">View pending bills and initiate payments.</div>
+                            </div>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a asp-controller="Bills" asp-action="Index" asp-route-accountNumber="@Model.Customer.AccountNumber" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                            <div>
+                                <i class="bi bi-clock-history text-primary fs-5 me-2"></i>
+                                <strong class="text-dark">Billing History</strong>
+                                <div class="fs-7 text-muted">Review past and current bill statements.</div>
+                            </div>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a asp-controller="Usage" asp-action="Index" asp-route-accountNumber="@Model.Customer.AccountNumber" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                            <div>
+                                <i class="bi bi-speedometer2 text-info fs-5 me-2"></i>
+                                <strong class="text-dark">Water Usage Records</strong>
+                                <div class="fs-7 text-muted">View meter readings and monthly unit consumption.</div>
+                            </div>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a asp-controller="Payment" asp-action="History" asp-route-accountNumber="@Model.Customer.AccountNumber" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                            <div>
+                                <i class="bi bi-receipt text-success fs-5 me-2"></i>
+                                <strong class="text-dark">Payment History</strong>
+                                <div class="fs-7 text-muted">View previous payment transaction records.</div>
+                            </div>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

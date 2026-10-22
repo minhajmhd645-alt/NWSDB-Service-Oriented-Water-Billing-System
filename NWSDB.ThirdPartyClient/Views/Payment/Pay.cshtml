@@ -1,0 +1,116 @@
+@model NWSDB.ThirdPartyClient.Models.PayBillViewModel
+@{
+    ViewData["Title"] = "Initiate Bill Payment";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Bills" asp-action="Unpaid" asp-route-accountNumber="@Model.AccountNumber">Unpaid Bills</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Payment" asp-action="SelectChannel" asp-route-billId="@Model.BillId" asp-route-accountNumber="@Model.AccountNumber" asp-route-amount="@Model.Amount" asp-route-billingMonth="@Model.BillingMonth">Choose Channel</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Pay Bill</li>
+            </ol>
+        </nav>
+        <h2 class="fw-bold"><i class="bi bi-credit-card-fill me-2 text-success"></i> Initiate Utility Payment</h2>
+        <p class="text-muted mb-1">Process third-party payment through NWSDB API &amp; Bank API integration layer.</p>
+        @if (!string.IsNullOrWhiteSpace(Model.ChannelName))
+        {
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 fs-7 mb-1">
+                <i class="bi bi-diagram-3 me-1"></i> Paying via: <strong>@Model.ChannelName</strong>
+            </span>
+        }
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="card-header bg-dark text-white p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="badge bg-cyan text-dark uppercase mb-1">WaterPay Checkout</span>
+                        <h4 class="fw-bold mb-0">Payment Processing</h4>
+                    </div>
+                    <div class="text-end font-monospace">
+                        <div class="fs-7 text-white-50">Bill Reference</div>
+                        <div class="fw-bold text-cyan">NWSDB-BILL-@Model.BillId</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-4 p-md-5">
+                <form asp-controller="Payment" asp-action="ProcessPay" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="BillId" />
+                    <input type="hidden" asp-for="AccountNumber" />
+                    <input type="hidden" asp-for="Amount" />
+                    <input type="hidden" asp-for="BillingMonth" />
+                    <input type="hidden" asp-for="ChannelName" />
+
+                    <!-- Statement Overview Box -->
+                    <div class="bg-light p-4 rounded-3 border mb-4">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-6">
+                                <div class="text-muted fs-7">Customer Account</div>
+                                <div class="fw-bold fs-5 text-dark font-monospace">@Model.AccountNumber</div>
+                                <div class="text-muted fs-7 mt-1">Billing Month: <strong>@Model.BillingMonth</strong></div>
+                            </div>
+                            <div class="col-md-6 text-md-end">
+                                <div class="text-muted fs-7">Total Amount Payable</div>
+                                <div class="display-6 fw-bold text-success">LKR @Model.Amount.ToString("N2")</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Method Selection -->
+                    <div class="mb-4">
+                        <label asp-for="PaymentMethod" class="form-label fw-bold"></label>
+                        <select asp-for="PaymentMethod" class="form-select form-select-lg">
+                            <option value="DemoBankAccount">Demo Bank Account (Direct Transfer)</option>
+                            <option value="DemoCard">Demo Debit / Credit Card</option>
+                        </select>
+                        <span asp-validation-for="PaymentMethod" class="text-danger fs-7"></span>
+                    </div>
+
+                    <!-- Bank Account Selection for Integration Testing -->
+                    <div class="mb-4">
+                        <label asp-for="BankAccountNumber" class="form-label fw-bold"></label>
+                        <select asp-for="BankAccountNumber" class="form-select form-select-lg font-monospace">
+                            <option value="DEMO-BANK-001">DEMO-BANK-001 (Sunil Perera - LKR 50,000.00 Balance - Valid)</option>
+                            <option value="DEMO-BANK-002">DEMO-BANK-002 (Nimal Silva - LKR 12,000.00 Balance - Valid)</option>
+                            <option value="DEMO-BANK-003">DEMO-BANK-003 (Kamala Fernando - LKR 75,000.00 Balance - Valid)</option>
+                            <option value="DEMO-BANK-004">DEMO-BANK-004 (Roshan Jayawardena - LKR 500.00 Balance - Low Balance Failure Test)</option>
+                            <option value="DEMO-BANK-005">DEMO-BANK-005 (Priya Rathnayake - Inactive Account Failure Test)</option>
+                        </select>
+                        <div class="form-text">
+                            Select <code>DEMO-BANK-001</code> for successful payment testing or <code>DEMO-BANK-004</code> for low-balance payment failure testing.
+                        </div>
+                        <span asp-validation-for="BankAccountNumber" class="text-danger fs-7"></span>
+                    </div>
+
+                    <div class="alert alert-info d-flex align-items-center fs-7 mb-4">
+                        <i class="bi bi-shield-lock-fill text-info fs-4 me-3"></i>
+                        <div>
+                            <strong>Secure Architectural Routing:</strong> Payment request will be transmitted to <code>POST https://localhost:7194/api/v1/payments</code>. The NWSDB API will handle secure tokenized communication with Bank API internally.
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-between align-items-center">
+                        <a asp-controller="Bills" asp-action="Unpaid" asp-route-accountNumber="@Model.AccountNumber" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-arrow-left me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-success btn-lg fw-bold px-5">
+                            <i class="bi bi-check-circle-fill me-1"></i> Confirm Payment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

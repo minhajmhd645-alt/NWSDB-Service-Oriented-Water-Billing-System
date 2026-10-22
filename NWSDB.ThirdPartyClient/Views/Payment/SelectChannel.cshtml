@@ -1,0 +1,385 @@
+@model NWSDB.ThirdPartyClient.Models.PaymentChannelViewModel
+@{
+    ViewData["Title"] = "Choose Your Payment Channel";
+}
+
+<style>
+    .channel-card {
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: all 0.22s ease;
+        border-radius: 1rem !important;
+    }
+    .channel-card:hover {
+        border-color: #0d6efd;
+        box-shadow: 0 0.5rem 1.5rem rgba(13,110,253,0.18) !important;
+        transform: translateY(-3px);
+    }
+    .channel-card.selected {
+        border-color: #0d6efd;
+        background: linear-gradient(135deg, #eef3ff 0%, #f8f9ff 100%) !important;
+        box-shadow: 0 0.5rem 1.5rem rgba(13,110,253,0.22) !important;
+    }
+    .channel-card input[type="radio"] { display: none; }
+
+    .channel-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        flex-shrink: 0;
+    }
+
+    /* Architecture diagram */
+    .arch-diagram-box {
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        color: #e6edf3;
+        font-family: 'Courier New', monospace;
+        font-size: 0.78rem;
+        line-height: 1.6;
+        overflow-x: auto;
+    }
+    .arch-badge {
+        display: inline-block;
+        padding: 0.25em 0.75em;
+        border-radius: 6px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        font-family: 'Courier New', monospace;
+        white-space: nowrap;
+    }
+    .arch-line {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+        margin: 0.35rem 0;
+    }
+    .arch-arrow { color: #58a6ff; font-weight: bold; }
+    .arch-center { color: #79c0ff; }
+    .selected-badge-bar {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        border-radius: 0.6rem;
+        padding: 0.5rem 1rem;
+        color: white;
+        font-size: 0.85rem;
+        display: none;
+    }
+</style>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Bills" asp-action="Unpaid" asp-route-accountNumber="@Model.AccountNumber">Unpaid Bills</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Choose Payment Channel</li>
+            </ol>
+        </nav>
+        <h2 class="fw-bold"><i class="bi bi-diagram-3-fill me-2 text-primary"></i> Choose Your Payment Channel</h2>
+        <p class="text-muted">Select how you would like to pay your NWSDB bill. All channels route through the NWSDB REST API.</p>
+    </div>
+</div>
+
+<!-- Bill Summary Bar -->
+<div class="card border-0 shadow-sm mb-4" style="border-radius:0.9rem;">
+    <div class="card-body p-3">
+        <div class="row align-items-center g-2">
+            <div class="col-sm-3 text-muted fs-7">Bill Reference</div>
+            <div class="col-sm-3 fw-bold font-monospace text-dark">NWSDB-BILL-@Model.BillId</div>
+            <div class="col-sm-3 text-muted fs-7">Account</div>
+            <div class="col-sm-3 fw-bold font-monospace text-dark">@Model.AccountNumber</div>
+            <div class="col-sm-3 text-muted fs-7">Billing Period</div>
+            <div class="col-sm-3 fw-semibold">@Model.BillingMonth</div>
+            <div class="col-sm-3 text-muted fs-7">Amount Due</div>
+            <div class="col-sm-3 fs-5 fw-bold text-danger">LKR @Model.Amount.ToString("N2")</div>
+        </div>
+    </div>
+</div>
+
+<!-- Channel Selection Form -->
+<form asp-controller="Payment" asp-action="ConfirmChannel" method="post" id="channelForm">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="BillId" />
+    <input type="hidden" asp-for="AccountNumber" />
+    <input type="hidden" asp-for="Amount" />
+    <input type="hidden" asp-for="BillingMonth" />
+
+    <!-- Selected channel indicator (shown dynamically) -->
+    <div id="selectedBar" class="selected-badge-bar mb-3">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <strong>Selected:</strong> <span id="selectedLabel">—</span>
+        &nbsp;&bull;&nbsp; Click <strong>Continue</strong> below to proceed.
+    </div>
+
+    <div class="row g-4 mb-4">
+
+        <!-- 1. NWSDB Official Portal -->
+        <div class="col-md-6 col-lg-4">
+            <label class="h-100 w-100" for="ch-nwsdb">
+                <div class="card h-100 border-0 shadow-sm channel-card p-4" id="card-nwsdb">
+                    <input type="radio" name="SelectedChannel" id="ch-nwsdb" value="NwsdbOfficialPortal" />
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <div class="channel-icon bg-primary-subtle text-primary">
+                            <i class="bi bi-droplet-fill"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-6 text-dark">NWSDB Official Portal</div>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-8">Official</span>
+                        </div>
+                    </div>
+                    <p class="text-muted fs-7 mb-0">Pay directly through the official NWSDB customer portal.</p>
+                </div>
+            </label>
+        </div>
+
+        <!-- 2. Cargills -->
+        <div class="col-md-6 col-lg-4">
+            <label class="h-100 w-100" for="ch-cargills">
+                <div class="card h-100 border-0 shadow-sm channel-card p-4" id="card-cargills">
+                    <input type="radio" name="SelectedChannel" id="ch-cargills" value="Cargills" />
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <div class="channel-icon bg-danger-subtle text-danger">
+                            <i class="bi bi-shop"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-6 text-dark">Cargills</div>
+                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle fs-8">Partner</span>
+                        </div>
+                    </div>
+                    <p class="text-muted fs-7 mb-0">Pay your NWSDB bill through the Cargills partner channel.</p>
+                </div>
+            </label>
+        </div>
+
+        <!-- 3. Keells -->
+        <div class="col-md-6 col-lg-4">
+            <label class="h-100 w-100" for="ch-keells">
+                <div class="card h-100 border-0 shadow-sm channel-card p-4" id="card-keells">
+                    <input type="radio" name="SelectedChannel" id="ch-keells" value="Keells" />
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <div class="channel-icon bg-success-subtle text-success">
+                            <i class="bi bi-cart3"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-6 text-dark">Keells</div>
+                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle fs-8">Partner</span>
+                        </div>
+                    </div>
+                    <p class="text-muted fs-7 mb-0">Pay your NWSDB bill through the Keells partner channel.</p>
+                </div>
+            </label>
+        </div>
+
+        <!-- 4. Telecom & Mobile -->
+        <div class="col-md-6 col-lg-4">
+            <label class="h-100 w-100" for="ch-telecom">
+                <div class="card h-100 border-0 shadow-sm channel-card p-4" id="card-telecom">
+                    <input type="radio" name="SelectedChannel" id="ch-telecom" value="Telecom" />
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <div class="channel-icon bg-info-subtle text-info">
+                            <i class="bi bi-phone-fill"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-6 text-dark">Telecom &amp; Mobile Payments</div>
+                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle fs-8">Partner</span>
+                        </div>
+                    </div>
+                    <p class="text-muted fs-7 mb-0">Use supported telecom or mobile payment services.</p>
+                </div>
+            </label>
+        </div>
+
+        <!-- 5. Other Bill Payment Services -->
+        <div class="col-md-6 col-lg-4">
+            <label class="h-100 w-100" for="ch-other">
+                <div class="card h-100 border-0 shadow-sm channel-card p-4" id="card-other">
+                    <input type="radio" name="SelectedChannel" id="ch-other" value="OtherUtilities" />
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <div class="channel-icon bg-warning-subtle text-warning">
+                            <i class="bi bi-credit-card-2-front-fill"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-6 text-dark">Other Bill Payment Services</div>
+                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle fs-8">Partner</span>
+                        </div>
+                    </div>
+                    <p class="text-muted fs-7 mb-0">Access other supported utility and bill payment channels.</p>
+                </div>
+            </label>
+        </div>
+
+        <!-- 6. More Partners -->
+        <div class="col-md-6 col-lg-4">
+            <label class="h-100 w-100" for="ch-more">
+                <div class="card h-100 border-0 shadow-sm channel-card p-4" id="card-more">
+                    <input type="radio" name="SelectedChannel" id="ch-more" value="MorePartners" />
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <div class="channel-icon bg-dark text-light" style="background:#1c2333 !important;">
+                            <i class="bi bi-plus-circle-fill"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-6 text-dark">More Partners</div>
+                            <span class="badge bg-dark text-light border border-dark-subtle fs-8">Extensible</span>
+                        </div>
+                    </div>
+                    <p class="text-muted fs-7 mb-0">Additional third-party organizations can consume NWSDB REST services.</p>
+                </div>
+            </label>
+        </div>
+
+    </div>
+
+    <!-- Action Bar -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-5">
+        <a asp-controller="Bills" asp-action="Unpaid" asp-route-accountNumber="@Model.AccountNumber"
+           class="btn btn-outline-secondary btn-lg">
+            <i class="bi bi-arrow-left me-1"></i> Back to Unpaid Bills
+        </a>
+        <button type="submit" class="btn btn-primary btn-lg fw-bold px-5" id="continueBtn">
+            <i class="bi bi-arrow-right-circle-fill me-1"></i> Continue
+        </button>
+    </div>
+</form>
+
+<!-- Architecture Diagram Section -->
+<div class="card border-0 shadow-sm mb-4" style="border-radius:1rem;">
+    <div class="card-header bg-white border-0 py-3">
+        <h5 class="mb-0 fw-bold">
+            <i class="bi bi-diagram-3 text-primary me-2"></i>
+            NWSDB Service Platform – Multi-Consumer Architecture
+        </h5>
+        <p class="text-muted fs-7 mb-0 mt-1">
+            External organizations consume NWSDB services through a secured REST API boundary —
+            no direct database access is permitted to any external consumer.
+        </p>
+    </div>
+    <div class="card-body">
+
+        <!-- Visual Architecture Diagram -->
+        <div class="arch-diagram-box">
+            <div class="text-center mb-3">
+                <span class="arch-badge" style="background:#1f6feb22;color:#58a6ff;border:1px solid #1f6feb;">
+                    ☁️ &nbsp;NWSDB Service Platform
+                </span>
+            </div>
+
+            <!-- Top row: NWSDB API -->
+            <div class="arch-line">
+                <span class="arch-badge" style="background:#1a7f3722;color:#3fb950;border:1px solid #1a7f37;">
+                    NWSDB REST API &nbsp;(https://localhost:7194)
+                </span>
+            </div>
+            <div class="arch-line">
+                <span class="arch-arrow">↓</span>
+            </div>
+            <div class="arch-line">
+                <span class="arch-badge" style="background:#6e40c922;color:#bc8cff;border:1px solid #6e40c9;">
+                    NWSDB SQL Server Database
+                </span>
+            </div>
+
+            <div style="border-top:1px dashed #30363d;margin:1rem 0;"></div>
+
+            <!-- Consumer row -->
+            <div class="text-center mb-2" style="color:#8b949e;font-size:0.72rem;letter-spacing:0.05em;">
+                EXTERNAL CONSUMERS (via REST API only — zero direct DB access)
+            </div>
+            <div class="arch-line" style="flex-wrap:wrap;gap:0.6rem;">
+                <span class="arch-badge" style="background:#1f6feb22;color:#58a6ff;border:1px solid #1f6feb;">
+                    💧 NWSDB Web Portal
+                </span>
+                <span class="arch-badge" style="background:#da363322;color:#f85149;border:1px solid #da3633;">
+                    🛒 Cargills
+                </span>
+                <span class="arch-badge" style="background:#1a7f3722;color:#3fb950;border:1px solid #1a7f37;">
+                    🛒 Keells
+                </span>
+                <span class="arch-badge" style="background:#9e6a0322;color:#d29922;border:1px solid #9e6a03;">
+                    📱 Telecom
+                </span>
+                <span class="arch-badge" style="background:#6e40c922;color:#bc8cff;border:1px solid #6e40c9;">
+                    💳 Other
+                </span>
+                <span class="arch-badge" style="background:#30363d;color:#8b949e;border:1px solid #484f58;">
+                    ➕ More...
+                </span>
+            </div>
+            <div class="arch-line"><span class="arch-arrow">↓ REST API ↓</span></div>
+            <div class="arch-line">
+                <span class="arch-badge" style="background:#1a7f3722;color:#3fb950;border:1px solid #1a7f37;">
+                    NWSDB API
+                </span>
+                <span class="arch-arrow mx-2">→</span>
+                <span class="arch-badge" style="background:#9e6a0322;color:#d29922;border:1px solid #9e6a03;">
+                    Bank.API (internal)
+                </span>
+                <span class="arch-arrow mx-2">→</span>
+                <span class="arch-badge" style="background:#1f6feb22;color:#58a6ff;border:1px solid #1f6feb;">
+                    Dummy Payment Gateway
+                </span>
+            </div>
+
+            <div style="border-top:1px dashed #30363d;margin:1rem 0;"></div>
+            <div class="text-center" style="color:#8b949e;font-size:0.7rem;">
+                ⚠️ &nbsp;External partners (Cargills, Keells, Telecom, etc.) are represented as
+                SOC demonstration channels only.<br>
+                No real partner API integrations exist. Actual payment uses: ThirdPartyClient → NWSDB API → Bank.API → Gateway.
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    (function () {
+        const cards = {
+            'ch-nwsdb':    { cardId: 'card-nwsdb',    label: '💧 NWSDB Official Portal' },
+            'ch-cargills': { cardId: 'card-cargills',  label: '🛒 Cargills' },
+            'ch-keells':   { cardId: 'card-keells',    label: '🛒 Keells' },
+            'ch-telecom':  { cardId: 'card-telecom',   label: '📱 Telecom & Mobile Payments' },
+            'ch-other':    { cardId: 'card-other',     label: '💳 Other Bill Payment Services' },
+            'ch-more':     { cardId: 'card-more',      label: '➕ More Partners' }
+        };
+
+        const selectedBar = document.getElementById('selectedBar');
+        const selectedLabel = document.getElementById('selectedLabel');
+
+        Object.keys(cards).forEach(function (radioId) {
+            const radio = document.getElementById(radioId);
+            if (!radio) return;
+            radio.addEventListener('change', function () {
+                // Clear all
+                Object.values(cards).forEach(function (c) {
+                    var el = document.getElementById(c.cardId);
+                    if (el) el.classList.remove('selected');
+                });
+                // Highlight chosen
+                var chosen = document.getElementById(cards[radioId].cardId);
+                if (chosen) chosen.classList.add('selected');
+                // Show bar
+                selectedLabel.textContent = cards[radioId].label;
+                selectedBar.style.display = 'block';
+            });
+        });
+
+        // Validate before submit
+        document.getElementById('channelForm').addEventListener('submit', function (e) {
+            const selected = document.querySelector('input[name="SelectedChannel"]:checked');
+            if (!selected) {
+                e.preventDefault();
+                alert('Please select a payment channel before continuing.');
+            }
+        });
+    })();
+</script>
+}
