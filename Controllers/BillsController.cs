@@ -1,64 +1,157 @@
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using NWSDB.Web.Models;
-using NWSDB.Web.Services;
+using NWSDB.API.DTOs;
+using NWSDB.API.DTOs.Bills;
+using NWSDB.API.Interfaces;
 
-namespace NWSDB.Web.Controllers
+namespace NWSDB.API.Controllers
 {
-    public class BillsController : Controller
+    [ApiController]
+    [Route("api/v1/[controller]")]
+    public class BillsController : ControllerBase
     {
-        private readonly INwsdbApiClient _apiClient;
+        private readonly IBillService _billService;
         private readonly ILogger<BillsController> _logger;
 
-        public BillsController(INwsdbApiClient apiClient, ILogger<BillsController> logger)
+        public BillsController(IBillService billService, ILogger<BillsController> logger)
         {
-            _apiClient = apiClient;
+            _billService = billService;
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index(string? accountNumber)
+        [HttpGet]
+        public async Task<ActionResult<ResponseDto<IEnumerable<BillDto>>>> GetAllBills()
         {
-            var acc = accountNumber ?? HttpContext.Session.GetString("CurrentAccountNumber") ?? "NWSDB10001";
-            acc = acc.Trim().ToUpper();
+            _logger.LogInformation("Retrieving all bills");
+            var bills = await _billService.GetAllBillsAsync();
 
-            HttpContext.Session.SetString("CurrentAccountNumber", acc);
-
-            var bills = await _apiClient.GetBillsAsync(acc);
-            var customer = await _apiClient.GetCustomerAsync(acc);
-
-            var viewModel = new BillsListViewModel
+            return Ok(new ResponseDto<IEnumerable<BillDto>>
             {
-                AccountNumber = acc,
-                CustomerName = customer?.FullName ?? acc,
-                Bills = bills.ToList(),
-                IsUnpaidOnly = false
-            };
-
-            return View(viewModel);
+                Success = true,
+                Message = "Bills retrieved successfully.",
+                Data = bills
+            });
         }
 
-        public async Task<IActionResult> Unpaid(string? accountNumber)
+        [HttpGet("{accountNumber}")]
+        public async Task<ActionResult<ResponseDto<IEnumerable<BillDto>>>> GetBills(string accountNumber)
         {
-            var acc = accountNumber ?? HttpContext.Session.GetString("CurrentAccountNumber") ?? "NWSDB10001";
-            acc = acc.Trim().ToUpper();
+            _logger.LogInformation("Retrieving bills for account: {AccountNumber}", accountNumber);
+            var bills = await _billService.GetBillsAsync(accountNumber);
 
-            HttpContext.Session.SetString("CurrentAccountNumber", acc);
-
-            var unpaidBills = await _apiClient.GetUnpaidBillsAsync(acc);
-            var customer = await _apiClient.GetCustomerAsync(acc);
-
-            var viewModel = new BillsListViewModel
+            return Ok(new ResponseDto<IEnumerable<BillDto>>
             {
-                AccountNumber = acc,
-                CustomerName = customer?.FullName ?? acc,
-                Bills = unpaidBills.ToList(),
-                IsUnpaidOnly = true
-            };
+                Success = true,
+                Message = "Bills retrieved successfully.",
+                Data = bills
+            });
+        }
 
-            return View(viewModel);
+        [HttpGet("{accountNumber}/unpaid")]
+        public async Task<ActionResult<ResponseDto<IEnumerable<BillDto>>>> GetUnpaidBills(string accountNumber)
+        {
+            _logger.LogInformation("Retrieving unpaid bills for account: {AccountNumber}", accountNumber);
+            var bills = await _billService.GetUnpaidBillsAsync(accountNumber);
+
+            return Ok(new ResponseDto<IEnumerable<BillDto>>
+            {
+                Success = true,
+                Message = "Unpaid bills retrieved successfully.",
+                Data = bills
+            });
+        }
+
+        [HttpGet("id/{billId}")]
+        public async Task<ActionResult<ResponseDto<BillDto>>> GetBill(int billId)
+        {
+            var bill = await _billService.GetBillAsync(billId);
+
+            if (bill == null)
+            {
+                return NotFound(new ResponseDto<BillDto>
+                {
+                    Success = false,
+                    Message = "Bill not found."
+                });
+            }
+
+            return Ok(new ResponseDto<BillDto>
+            {
+                Success = true,
+                Message = "Bill retrieved successfully.",
+                Data = bill
+            });
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<ResponseDto<BillDto>>> CreateBill([FromBody] CreateBillDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ResponseDto<BillDto>
+                {
+                    Success = false,
+                    Message = "Invalid request data."
+                });
+            }
+
+            try
+            {
+                _logger.LogInformation("Creating new bill for account: {AccountNumber}", dto.AccountNumber);
+                var createdBill = await _billService.CreateBillAsync(dto);
+
+                return CreatedAtAction(
+                    nameof(GetBill),
+                    new { billId = createdBill.BillId },
+                    new ResponseDto<BillDto>
+                    {
+                        Success = true,
+                        Message = "Bill created successfully.",
+                        Data = createdBill
+                    });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new ResponseDto<BillDto>
+                {
+                    Success = false,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpPut("{billId}")]
+        public async Task<ActionResult<ResponseDto<BillDto>>> UpdateBill(int billId, [FromBody] UpdateBillDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ResponseDto<BillDto>
+                {
+                    Success = false,
+                    Message = "Invalid request data."
+                });
+            }
+
+            _logger.LogInformation("Updating bill: {BillId}", billId);
+            var updatedBill = await _billService.UpdateBillAsync(billId, dto);
+
+            if (updatedBill == null)
+            {
+                return NotFound(new ResponseDto<BillDto>
+                {
+                    Success = false,
+                    Message = $"Bill with ID '{billId}' was not found."
+                });
+            }
+
+            return Ok(new ResponseDto<BillDto>
+            {
+                Success = true,
+                Message = "Bill updated successfully.",
+                Data = updatedBill
+            });
         }
     }
 }

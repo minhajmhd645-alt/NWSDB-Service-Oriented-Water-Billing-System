@@ -1,0 +1,486 @@
+[
+  {
+    "ContainingType": "NWSDB.API.Controllers.AdminController",
+    "Method": "GetStats",
+    "RelativePath": "api/v1/Admin/stats",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "NWSDB.API.DTOs.ResponseDto\u00601[[NWSDB.API.DTOs.Admin.AdminStatsDto, NWSDB.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "NWSDB.API.Controllers.BillsController",
+    "Method": "GetAllBills",
+    "RelativePath": "api/v1/Bills",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "NWSDB.API.DTOs.ResponseDto\u00601[[System.Collections.Generic.IEnumerable\u00601[[NWSDB.API.DTOs.Bills.BillDto, NWSDB.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "NWSDB.API.Controllers.BillsController",
+    "Method": "CreateBill",
+    "RelativePath": "api/v1/Bills",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "NWSDB.API.DTOs.Bills.CreateBillDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "NWSDB.API.DTOs.ResponseDto\u00601[[NWSDB.API.DTOs.Bills.BillDto, NWSDB.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "NWSDB.API.Controllers.BillsController",
+    "Method": "GetBills",
+    "RelativePath": "api/v1/Bills/{accountNumber}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "accountNumber",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "NWSDB.API.DTOs.ResponseDto\u00601[[System.Collections.Generic.IEnumerable\u00601[[NWSDB.API.DTOs.Bills.BillDto, NWSDB.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "NWSDB.API.Controllers.BillsController",
+    "Method": "GetUnpaidBills",
+    "RelativePath": "api/v1/Bills/{accountNumber}/unpaid",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "accountNumber",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "NWSDB.API.DTOs.ResponseDto\u00601[[System.Collections.Generic.IEnumerable\u00601[[NWSDB.API.DTOs.Bills.BillDto, NWSDB.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "NWSDB.API.Controllers.BillsController",
+    "Method": "UpdateBill",
+    "RelativePath": "api/v1/Bills/{billId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "billId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "NWSDB.API.DTOs.Bills.UpdateBillDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "NWSDB.API.DTOs.ResponseDto\u00601[[NWSDB.API.DTOs.Bills.BillDto, NWSDB.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "NWSDB.API.Controllers.BillsController",
+    "Method": "GetBill",
+    "RelativePath": "api/v1/Bills/id/{billId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "billId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "NWSDB.API.DTOs.ResponseDto\u00601[[NWSDB.API.DTOs.Bills.BillDto, NWSDB.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "NWSDB.API.Controllers.CustomersController",
+    "Method": "GetAllCustomers",
+    "RelativePath": "api/v1/Customers",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "NWSDB.API.DTOs.ResponseDto\u00601[[System.Collections.Generic.IEnumerable\u00601[[NWSDB.API.DTOs.Customers.CustomerDto, NWSDB.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "NWSDB.API.Controllers.CustomersController",
+    "Method": "CreateCustomer",
+    "RelativePath": "api/v1/Customers",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "NWSDB.API.DTOs.Customers.CreateCustomerDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "NWSDB.API.DTOs.ResponseDto\u00601[[NWSDB.API.DTOs.Customers.CustomerDto, NWSDB.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "NWSDB.API.Controllers.CustomersController",
+    "Method": "GetCustomer",
+    "RelativePath": "api/v1/Customers/{accountNumber}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "accountNumber",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "NWSDB.API.DTOs.ResponseDto\u00601[[NWSDB.API.DTOs.Customers.CustomerDto, NWSDB.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "NWSDB.API.Controllers.CustomersController",
+    "Method": "UpdateCustomer",
+    "RelativePath": "api/v1/Customers/{accountNumber}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "accountNumber",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "NWSDB.API.DTOs.Customers.UpdateCustomerDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "NWSDB.API.DTOs.ResponseDto\u00601[[NWSDB.API.DTOs.Customers.CustomerDto, NWSDB.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "NWSDB.API.Controllers.CustomersController",
+    "Method": "GetCustomerSummary",
+    "RelativePath": "api/v1/Customers/{accountNumber}/summary",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "accountNumber",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "NWSDB.API.DTOs.ResponseDto\u00601[[NWSDB.API.DTOs.Customers.CustomerSummaryDto, NWSDB.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "NWSDB.API.Controllers.CustomersController",
+    "Method": "GetNextAccountNumber",
+    "RelativePath": "api/v1/Customers/next-account-number",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "NWSDB.API.DTOs.ResponseDto\u00601[[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "NWSDB.API.Controllers.PaymentsController",
+    "Method": "GetAllPayments",
+    "RelativePath": "api/v1/Payments",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "NWSDB.API.DTOs.ResponseDto\u00601[[System.Collections.Generic.IEnumerable\u00601[[NWSDB.API.DTOs.Payments.PaymentDto, NWSDB.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "NWSDB.API.Controllers.PaymentsController",
+    "Method": "CreatePayment",
+    "RelativePath": "api/v1/Payments",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "NWSDB.API.DTOs.Payments.PaymentRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "NWSDB.API.DTOs.ResponseDto\u00601[[NWSDB.API.DTOs.Payments.PaymentDto, NWSDB.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "NWSDB.API.Controllers.PaymentsController",
+    "Method": "GetPayments",
+    "RelativePath": "api/v1/Payments/{accountNumber}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "accountNumber",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "NWSDB.API.DTOs.ResponseDto\u00601[[System.Collections.Generic.IEnumerable\u00601[[NWSDB.API.DTOs.Payments.PaymentDto, NWSDB.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "NWSDB.API.Controllers.PaymentsController",
+    "Method": "GetPayment",
+    "RelativePath": "api/v1/Payments/id/{paymentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "paymentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "NWSDB.API.DTOs.ResponseDto\u00601[[NWSDB.API.DTOs.Payments.PaymentDto, NWSDB.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "NWSDB.API.Controllers.UsageController",
+    "Method": "GetUsageHistory",
+    "RelativePath": "api/v1/Usage/{accountNumber}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "accountNumber",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "NWSDB.API.DTOs.ResponseDto\u00601[[System.Collections.Generic.IEnumerable\u00601[[NWSDB.API.DTOs.WaterUsage.WaterUsageDto, NWSDB.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "NWSDB.API.Controllers.UsageController",
+    "Method": "GetCurrentUsage",
+    "RelativePath": "api/v1/Usage/{accountNumber}/current",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "accountNumber",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "NWSDB.API.DTOs.ResponseDto\u00601[[NWSDB.API.DTOs.WaterUsage.WaterUsageDto, NWSDB.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "NWSDB.API.Controllers.HealthController",
+    "Method": "Get",
+    "RelativePath": "Health",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]

@@ -1,158 +1,129 @@
-using System.Linq;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using NWSDB.Web.Models;
-using NWSDB.Web.Services;
+using NWSDB.API.DTOs;
+using NWSDB.API.DTOs.Payments;
+using NWSDB.API.Exceptions;
+using NWSDB.API.Interfaces;
 
-namespace NWSDB.Web.Controllers
+namespace NWSDB.API.Controllers
 {
-    public class PaymentsController : Controller
+    [ApiController]
+    [Route("api/v1/[controller]")]
+    public class PaymentsController : ControllerBase
     {
-        private readonly INwsdbApiClient _apiClient;
+        private readonly IPaymentService _paymentService;
         private readonly ILogger<PaymentsController> _logger;
 
-        public PaymentsController(INwsdbApiClient apiClient, ILogger<PaymentsController> logger)
+        public PaymentsController(IPaymentService paymentService, ILogger<PaymentsController> logger)
         {
-            _apiClient = apiClient;
+            _paymentService = paymentService;
             _logger = logger;
         }
 
-        public async Task<IActionResult> History(string? accountNumber)
+        [HttpGet]
+        public async Task<ActionResult<ResponseDto<IEnumerable<PaymentDto>>>> GetAllPayments()
         {
-            var acc = accountNumber ?? HttpContext.Session.GetString("CurrentAccountNumber") ?? "NWSDB10001";
-            acc = acc.Trim().ToUpper();
+            _logger.LogInformation("Retrieving all payment records");
+            var payments = await _paymentService.GetAllPaymentsAsync();
 
-            HttpContext.Session.SetString("CurrentAccountNumber", acc);
-
-            var payments = await _apiClient.GetPaymentHistoryAsync(acc);
-            var customer = await _apiClient.GetCustomerAsync(acc);
-
-            ViewBag.AccountNumber = acc;
-            ViewBag.CustomerName = customer?.FullName ?? acc;
-
-            return View(payments.ToList());
+            return Ok(new ResponseDto<IEnumerable<PaymentDto>>
+            {
+                Success = true,
+                Message = "Payment records retrieved successfully.",
+                Data = payments
+            });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Pay(int billId, string? accountNumber)
+        [HttpGet("{accountNumber}")]
+        public async Task<ActionResult<ResponseDto<IEnumerable<PaymentDto>>>> GetPayments(string accountNumber)
         {
-            var acc = accountNumber ?? HttpContext.Session.GetString("CurrentAccountNumber") ?? "NWSDB10001";
-            acc = acc.Trim().ToUpper();
+            _logger.LogInformation("Retrieving payments for account: {AccountNumber}", accountNumber);
+            var payments = await _paymentService.GetPaymentsAsync(accountNumber);
 
-            HttpContext.Session.SetString("CurrentAccountNumber", acc);
-
-            var bill = await _apiClient.GetBillAsync(billId);
-            if (bill == null)
+            return Ok(new ResponseDto<IEnumerable<PaymentDto>>
             {
-                return NotFound("Bill not found.");
+                Success = true,
+                Message = "Payment history retrieved successfully.",
+                Data = payments
+            });
+        }
+
+        [HttpGet("id/{paymentId}")]
+        public async Task<ActionResult<ResponseDto<PaymentDto>>> GetPayment(int paymentId)
+        {
+            var payment = await _paymentService.GetPaymentAsync(paymentId);
+
+            if (payment == null)
+            {
+                return NotFound(new ResponseDto<PaymentDto>
+                {
+                    Success = false,
+                    Message = "Payment not found."
+                });
             }
 
-            if (bill.Status == "Paid")
+            return Ok(new ResponseDto<PaymentDto>
             {
-                TempData["ErrorMessage"] = "This bill is already paid.";
-                return RedirectToAction("Unpaid", "Bills", new { accountNumber = acc });
-            }
-
-            var customer = await _apiClient.GetCustomerAsync(acc);
-
-            var viewModel = new PaymentFormViewModel
-            {
-                BillId = bill.BillId,
-                AccountNumber = acc,
-                CustomerName = customer?.FullName ?? acc,
-                BillAmount = bill.BillAmount,
-                BillingMonth = bill.BillingMonth,
-                DueDate = bill.DueDate,
-                PaymentMethod = "DemoBankAccount",
-                BankAccountNumber = "DEMO-BANK-001"
-            };
-
-            return View(viewModel);
+                Success = true,
+                Message = "Payment retrieved successfully.",
+                Data = payment
+            });
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Pay(PaymentFormViewModel model)
+        public async Task<ActionResult<ResponseDto<PaymentDto>>> CreatePayment([FromBody] PaymentRequestDto request)
         {
             if (!ModelState.IsValid)
             {
-                return View(model);
+                return BadRequest(new ResponseDto<PaymentDto>
+                {
+                    Success = false,
+                    Message = "Invalid input."
+                });
             }
 
-            // Re-fetch bill from API to enforce that customer cannot tamper with amount
-            var bill = await _apiClient.GetBillAsync(model.BillId);
-            if (bill == null)
+            _logger.LogInformation("Processing payment for BillId: {BillId}, Amount: {Amount}", request.BillId, request.Amount);
+
+            try
             {
-                model.ErrorMessage = "The bill could not be found.";
-                return View(model);
+                var payment = await _paymentService.CreatePaymentAsync(request);
+                return CreatedAtAction(nameof(GetPayment), new { paymentId = payment.PaymentId }, new ResponseDto<PaymentDto>
+                {
+                    Success = true,
+                    Message = "Payment created successfully.",
+                    Data = payment
+                });
             }
-
-            if (bill.Status == "Paid")
+            catch (ArgumentException ex)
             {
-                model.ErrorMessage = "This bill is already paid.";
-                return View(model);
+                return BadRequest(new ResponseDto<PaymentDto>
+                {
+                    Success = false,
+                    Message = ex.Message
+                });
             }
-
-            var request = new PaymentRequestModel
+            catch (BankApiException ex)
             {
-                BillId = bill.BillId,
-                AccountNumber = model.AccountNumber,
-                Amount = bill.BillAmount, // Lock to exact bill amount
-                PaymentMethod = "DemoBankAccount",
-                BankAccountNumber = model.BankAccountNumber.Trim()
-            };
-
-            var (success, payment, errorMessage) = await _apiClient.MakePaymentAsync(request);
-
-            if (success && payment != null)
-            {
-                return RedirectToAction(nameof(Success), new { paymentId = payment.PaymentId, accountNumber = model.AccountNumber });
+                _logger.LogWarning(ex, "Bank API rejected payment for BillId: {BillId}. Status: {StatusCode}", request.BillId, ex.StatusCode);
+                var statusCode = (int)ex.StatusCode;
+                return StatusCode(statusCode, new ResponseDto<PaymentDto>
+                {
+                    Success = false,
+                    Message = ex.Message
+                });
             }
-
-            return RedirectToAction(nameof(Failure), new { billId = model.BillId, accountNumber = model.AccountNumber, amount = bill.BillAmount, errorMessage });
-        }
-
-        public async Task<IActionResult> Success(int paymentId, string? accountNumber)
-        {
-            var acc = accountNumber ?? HttpContext.Session.GetString("CurrentAccountNumber") ?? "NWSDB10001";
-            acc = acc.Trim().ToUpper();
-
-            var payment = await _apiClient.GetPaymentAsync(paymentId);
-            if (payment == null)
+            catch (Exception ex)
             {
-                return NotFound("Payment record not found.");
+                _logger.LogError(ex, "Error processing payment for BillId: {BillId}", request.BillId);
+                return StatusCode(500, new ResponseDto<PaymentDto>
+                {
+                    Success = false,
+                    Message = "An error occurred while processing the payment."
+                });
             }
-
-            var viewModel = new PaymentReceiptViewModel
-            {
-                PaymentId = payment.PaymentId,
-                BillId = payment.BillId,
-                AccountNumber = acc,
-                Amount = payment.Amount,
-                TransactionId = payment.TransactionId,
-                PaymentMethod = payment.PaymentMethod,
-                Status = payment.Status,
-                PaymentDate = payment.PaymentDate
-            };
-
-            return View(viewModel);
-        }
-
-        public IActionResult Failure(int billId, string accountNumber, decimal amount, string errorMessage)
-        {
-            var viewModel = new PaymentFailureViewModel
-            {
-                BillId = billId,
-                AccountNumber = accountNumber,
-                Amount = amount,
-                ErrorMessage = string.IsNullOrWhiteSpace(errorMessage)
-                    ? "Payment could not be completed. Please check your account details and try again."
-                    : errorMessage
-            };
-
-            return View(viewModel);
         }
     }
 }
