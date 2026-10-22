@@ -1,0 +1,23 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "Bank.API\\Bank.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "NWSDB.ThirdPartyClient\\NWSDB.ThirdPartyClient.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "NWSDB.Web\\NWSDB.Web.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "NWSDB.API\\NWSDB.API.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
